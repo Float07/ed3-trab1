@@ -1,4 +1,4 @@
-build: *.c
-	gcc -o main aux.c main.c
+all: *.c
+	gcc -o programaTrab aux.c main.c -Wall
 run:
-	./main
+	./programaTrab
