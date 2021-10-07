@@ -1,3 +1,5 @@
+//Este módulo lida principalmente com funções diretamente relacionadas a registros ou arquivos
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
