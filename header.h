@@ -3,6 +3,6 @@
 
 typedef struct Register Register;
 
-void readCSV(FILE* inFile);
+void readCSV(FILE* inFile, FILE* outFile);
 
 #endif 

@@ -43,6 +43,15 @@ struct RegisterStr{
 };
 typedef struct RegisterStr RegisterStr;
 
+//Tipo para representar o cabeçalho do arquivo binário
+struct FileHeader{
+    char status;
+    long topoLista;
+    int nroEstacoes;
+    int nroParesEstacao;
+};
+typedef struct FileHeader FileHeader;
+
 /*
 * FUNÇÕES DE DEBUGGING
 * Utilizadas para ajudar no desenvolvimento do código.
@@ -222,6 +231,15 @@ void printRegister(Register reg) {
     return;
 }
 
+//Escreve o cabeçalho no arquivo binário
+int writeHeader(FILE* outFile, FileHeader fileHeader) {
+    fwrite(&(fileHeader.status), sizeof(char), 1, outFile);
+    fwrite(&(fileHeader.topoLista), sizeof(long), 1, outFile);
+    fwrite(&(fileHeader.nroEstacoes), sizeof(int), 1, outFile);
+    fwrite(&(fileHeader.nroParesEstacao), sizeof(int), 1, outFile);
+
+    return 0;
+}
 
 
 /*
@@ -230,8 +248,15 @@ void printRegister(Register reg) {
 */
 
 //Função responsável por ler o csv e escrever os dados no arquivo binário
-void readCSV(FILE* inFile) {
+void readCSV(FILE* inFile, FILE* outFile) {
     char buff[MAX_NAME_LENGTH*2];
+
+    FileHeader fileHeader;
+    fileHeader.status = 1;
+    fileHeader.topoLista = -1;
+    fileHeader.nroEstacoes = -1;
+    fileHeader.nroParesEstacao = -1;
+    writeHeader(outFile, fileHeader);
 
     fgets(buff, (MAX_NAME_LENGTH*2)-4, (FILE*)inFile); //Pula a primeira linha (cabeçalho)
     while(1) {
