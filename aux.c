@@ -1,5 +1,29 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+
+#define MAX_NAME_LENGTH 1024 //Tamanho máximo de um nomeEstacao ou nomeLinha
+
+//Usado para representar um registro.
+struct Register{
+    //Campos de tamanho fixo para gerenciamento
+    char removido;      //1 byte
+    int tamanho;        //4 bytes
+    long proxLista;     //8 bytes
+    //Campos de tamanho fixo
+    int codEstacao;     //4 bytes
+    int codLinha;       //4 bytes
+    int codProxEstacao; //4 bytes
+    int distProxEstacao;//4 bytes
+    int codLinhaIntegra;//4 bytes
+    int codEstIntegra;  //4 bytes
+    //Tamanho total dos campos fixos = 37
+
+    //Campos de tamanho variável
+    char nomeEstacao[MAX_NAME_LENGTH];
+    char nomeLinha[MAX_NAME_LENGTH];
+};
+typedef struct Register Register;
 
 //Tipo de dado que salva os campos de um registro como strings.
 //Esse tipo é convertido para o tipo Register.
@@ -12,8 +36,8 @@ struct RegisterStr{
     char codLinhaIntegra[32];
     char codEstIntegra[32];
     //Campos de tamanho variável
-    char nomeEstacao[1024];
-    char nomeLinha[1024];
+    char nomeEstacao[MAX_NAME_LENGTH];
+    char nomeLinha[MAX_NAME_LENGTH];
 };
 typedef struct RegisterStr RegisterStr;
 
@@ -35,13 +59,60 @@ void printRegisterStr(RegisterStr reg) {
     return;
 }
 
+
+
 /*
 * FUNÇÕES INTERNAS
 * Utilizadas somente em "aux.c"
 */
 
+//Transforma dado do tipo RegisterStr no tipo Register
+Register registerStrToRegister(RegisterStr registerStr) {
+    Register reg;
+
+    reg.removido = 0;
+    reg.tamanho = 37; //Tamanho inicial, desconsiderando os campos de tamanho variável
+    reg.proxLista = -1;
+
+
+    //Transforma strings de registerStr em inteiros para reg
+    //Caso os valores que podem ser nulos sejam strings vazias, o inteiro salvo é -1
+    reg.codEstacao = atoi(registerStr.codEstacao);
+
+    if(strlen(registerStr.codLinha))
+        reg.codLinha = atoi(registerStr.codLinha);
+    else
+        reg.codLinha = -1;
+
+    if(strlen(registerStr.codProxEstacao))
+        reg.codProxEstacao = atoi(registerStr.codProxEstacao);
+    else
+        reg.codProxEstacao = -1;
+
+    if(strlen(registerStr.distProxEstacao))
+        reg.distProxEstacao = atoi(registerStr.distProxEstacao);
+    else
+        reg.distProxEstacao = -1;
+
+    if(strlen(registerStr.codLinhaIntegra))
+        reg.codLinhaIntegra = atoi(registerStr.codLinhaIntegra);
+    else
+        reg.codLinhaIntegra = -1;
+
+    if(strlen(registerStr.codEstIntegra))
+        reg.codEstIntegra = atoi(registerStr.codEstIntegra);
+    else
+        reg.codEstIntegra = -1;
+
+    //Copia strings dos campos de tamanho variável
+    strcpy(reg.nomeEstacao, registerStr.nomeEstacao);
+    strcpy(reg.nomeLinha, registerStr.nomeLinha);
+
+    return reg;
+}
+
 //Transforma uma linha do .csv para um tipo RegisterStr
-RegisterStr stringToRegisterStr(char* registerStr){
+Register stringToRegister(char* registerStr) {
     RegisterStr recoveredRegister;
     int i, j;
 
@@ -101,8 +172,55 @@ RegisterStr stringToRegisterStr(char* registerStr){
     }
     recoveredRegister.codEstIntegra[i] = '\0';
 
-    return recoveredRegister;
+    Register reg = registerStrToRegister(recoveredRegister);
+
+    return reg;
 }
+
+//Imprime os valores de um dado do tipo Register
+void printRegister(Register reg) {
+    int codEstacao = reg.codEstacao;
+
+    char nomeEstacao[MAX_NAME_LENGTH];
+    strcpy(nomeEstacao, reg.nomeEstacao);
+
+    char codLinha[32];
+    sprintf(codLinha, "%d", reg.codLinha);
+    if(!strcmp(codLinha, "-1"))
+        strcpy(codLinha, "NULO");
+
+    char nomeLinha[MAX_NAME_LENGTH];
+    strcpy(nomeLinha, reg.nomeLinha);
+    if(!strlen(nomeLinha))
+        strcpy(nomeLinha, "NULO");
+
+    char codProxEstacao[32];
+    sprintf(codProxEstacao, "%d", reg.codProxEstacao);
+    if(!strcmp(codProxEstacao, "-1"))
+        strcpy(codProxEstacao, "NULO");
+    
+    char distProxEstacao[32];
+    sprintf(distProxEstacao, "%d", reg.distProxEstacao);
+    if(!strcmp(distProxEstacao, "-1"))
+        strcpy(distProxEstacao, "NULO");
+
+    char codLinhaIntegra[32];
+    sprintf(codLinhaIntegra, "%d", reg.codLinhaIntegra);
+    if(!strcmp(codLinhaIntegra, "-1"))
+        strcpy(codLinhaIntegra, "NULO");
+
+    char codEstIntegra[32];
+    sprintf(codEstIntegra, "%d", reg.codEstIntegra);
+    if(!strcmp(codEstIntegra, "-1"))
+        strcpy(codEstIntegra, "NULO");
+
+    printf("%d %s %s %s %s %s %s %s", codEstacao, nomeEstacao, codLinha, nomeLinha, codProxEstacao,
+    distProxEstacao, codLinhaIntegra, codEstIntegra);
+
+    return;
+}
+
+
 
 /*
 * FUNÇÕES EXTERNAS
@@ -111,16 +229,16 @@ RegisterStr stringToRegisterStr(char* registerStr){
 
 //Função responsável por ler o csv e escrever os dados no arquivo binário
 void readCSV(FILE* inFile) {
-    char buff[2048];
+    char buff[MAX_NAME_LENGTH*2];
 
-    fgets(buff, 2044, (FILE*)inFile); //Pula a primeira linha (cabeçalho)
+    fgets(buff, (MAX_NAME_LENGTH*2)-4, (FILE*)inFile); //Pula a primeira linha (cabeçalho)
     while(1) {
-        if(fgets(buff, 2044, (FILE*)inFile) == NULL)
+        if(fgets(buff, (MAX_NAME_LENGTH*2)-4, (FILE*)inFile) == NULL)
             break;
 
-        RegisterStr reg = stringToRegisterStr(buff);
+        Register reg = stringToRegister(buff);
         
-        printRegisterStr(reg);
+        printRegister(reg);
         printf("\n");
     }
 
