@@ -1,4 +1,4 @@
 all: *.c
-	gcc -o programaTrab aux.c main.c -Wall
+	gcc -o programaTrab *.c -Wall
 run:
 	./programaTrab
