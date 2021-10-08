@@ -10,7 +10,7 @@
 struct Register{
     //Campos de tamanho fixo para gerenciamento
     char removido;      //1 byte
-    int tamanho;        //4 bytes
+    int tamanhoRegistro;        //4 bytes
     long proxLista;     //8 bytes
     //Campos de tamanho fixo
     int codEstacao;     //4 bytes
@@ -82,7 +82,7 @@ Register registerStrToRegister(RegisterStr registerStr) {
     Register reg;
 
     reg.removido = 0;
-    reg.tamanho = 37; //Tamanho inicial, desconsiderando os campos de tamanho variável
+    reg.tamanhoRegistro = 37 + 2; //Tamanho inicial mais o tamanho dos dois pipes, desconsiderando os campos de tamanho variável
     reg.proxLista = -1;
 
 
@@ -115,9 +115,12 @@ Register registerStrToRegister(RegisterStr registerStr) {
     else
         reg.codEstIntegra = -1;
 
-    //Copia strings dos campos de tamanho variável
+    //Copia strings dos campos de tamanho variável e soma no tamanho do registro
     strcpy(reg.nomeEstacao, registerStr.nomeEstacao);
     strcpy(reg.nomeLinha, registerStr.nomeLinha);
+    printf("%d ", reg.tamanhoRegistro);
+    reg.tamanhoRegistro += strlen(reg.nomeLinha) + strlen(reg.nomeEstacao);
+    printf("%d %d %d", reg.tamanhoRegistro, (int)strlen(reg.nomeLinha), (int)strlen(reg.nomeEstacao));
 
     return reg;
 }
@@ -241,6 +244,28 @@ int writeHeader(FILE* outFile, FileHeader fileHeader) {
     return 0;
 }
 
+//Escreve um registro no arquivo binário
+int writeRegister(FILE* outFile, Register reg) {
+    //Escreve campos de tamanho fixo
+    fwrite(&(reg.removido), sizeof(char), 1, outFile);
+    fwrite(&(reg.tamanhoRegistro), sizeof(int), 1, outFile);
+    fwrite(&(reg.proxLista), sizeof(long), 1, outFile);
+    fwrite(&(reg.codEstacao), sizeof(int), 1, outFile);
+    fwrite(&(reg.codLinha), sizeof(int), 1, outFile);
+    fwrite(&(reg.codProxEstacao), sizeof(int), 1, outFile);
+    fwrite(&(reg.distProxEstacao), sizeof(int), 1, outFile);
+    fwrite(&(reg.codLinhaIntegra), sizeof(int), 1, outFile);
+    fwrite(&(reg.codEstIntegra), sizeof(int), 1, outFile);
+
+    //Escreve os dois campos de tamanho variável
+    fwrite(reg.nomeEstacao, sizeof(char), strlen(reg.nomeEstacao), outFile);
+    fwrite("|", sizeof(char), 1, outFile);
+
+    fwrite(reg.nomeLinha, sizeof(char), strlen(reg.nomeLinha), outFile);
+    fwrite("|", sizeof(char), 1, outFile);
+
+    return 0;
+}
 
 /*
 * FUNÇÕES EXTERNAS
@@ -265,7 +290,8 @@ void readCSV(FILE* inFile, FILE* outFile) {
 
         Register reg = stringToRegister(buff);
         
-        printRegister(reg);
+        //printRegister(reg);
+        writeRegister(outFile, reg);
         printf("\n");
     }
 
