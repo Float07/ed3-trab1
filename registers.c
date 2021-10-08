@@ -118,9 +118,7 @@ Register registerStrToRegister(RegisterStr registerStr) {
     //Copia strings dos campos de tamanho variável e soma no tamanho do registro
     strcpy(reg.nomeEstacao, registerStr.nomeEstacao);
     strcpy(reg.nomeLinha, registerStr.nomeLinha);
-    printf("%d ", reg.tamanhoRegistro);
     reg.tamanhoRegistro += strlen(reg.nomeLinha) + strlen(reg.nomeEstacao);
-    printf("%d %d %d", reg.tamanhoRegistro, (int)strlen(reg.nomeLinha), (int)strlen(reg.nomeEstacao));
 
     return reg;
 }
@@ -290,7 +288,7 @@ void readCSV(FILE* inFile, FILE* outFile) {
 
         Register reg = stringToRegister(buff);
         
-        //printRegister(reg);
+        printRegister(reg);
         writeRegister(outFile, reg);
         printf("\n");
     }
