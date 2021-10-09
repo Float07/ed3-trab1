@@ -4,7 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_NAME_LENGTH 1024 //Tamanho máximo de um nomeEstacao ou nomeLinha
+//Tamanho máximo de um nomeEstacao ou nomeLinha que pode ser lido.
+//Esse tamanho é o suficiente para qualquer nome comum e torna o programa menos suscetível a erro
+//que usar alocação dinâmica
+#define MAX_NAME_LENGTH 1024
+#define BIN_HEADER_SIZE 17 //Quantidade de bytes do header no arquivo binário
 
 //Usado para representar um registro.
 struct Register{
@@ -74,7 +78,7 @@ void printRegisterStr(RegisterStr reg) {
 
 /*
 * FUNÇÕES INTERNAS
-* Utilizadas somente em "aux.c"
+* Utilizadas somente em "registers.c"
 */
 
 //Transforma dado do tipo RegisterStr no tipo Register
@@ -191,6 +195,9 @@ Register stringToRegister(char* registerStr) {
 
 //Imprime os valores de um dado do tipo Register
 void printRegister(Register reg) {
+    if (reg.removido)
+        return;
+
     int codEstacao = reg.codEstacao;
 
     char nomeEstacao[MAX_NAME_LENGTH];
@@ -265,15 +272,104 @@ int writeRegister(FILE* outFile, Register reg) {
     return 0;
 }
 
+//Lê o header do binário, retorna um FileHeader, e posiciona o cursor logo após o header
+FileHeader readHeader(FILE* inFile) {
+    fseek(inFile, 0, SEEK_SET);
+
+    FileHeader fileHeader;
+
+    fread(&(fileHeader.status), sizeof(char), 1, inFile);
+    fread(&(fileHeader.topoLista), sizeof(long), 1, inFile);
+    fread(&(fileHeader.nroEstacoes), sizeof(int), 1, inFile);
+    fread(&(fileHeader.nroParesEstacao), sizeof(int), 1, inFile);
+
+    return fileHeader;
+}
+
+//Lê um registro do arquivo binário e retorna um Register
+//O cursor deve estar previamente posicionado no primeiro byte do registro
+//No final da execução, o cursor será posicionado no primeiro byte do registro seguinte
+Register readRegister(FILE* inFile) {
+    Register reg;
+    char tempString[MAX_NAME_LENGTH];
+
+    //Leitura dos campos de tamanho fixo
+    if (fread(&(reg.removido), sizeof(char), 1, inFile) == 0) {
+        //Retorna um registro de tamanho 0 se chegou ao final do arquivo
+        reg.tamanhoRegistro = 0;
+        return reg;
+    }
+    fread(&(reg.tamanhoRegistro), sizeof(int), 1, inFile);  
+    if (reg.removido) {
+        //Se o registro foi removido, posiciona o cursor no final do registro removido e o retorna
+       fseek(inFile, reg.tamanhoRegistro - sizeof(char) - sizeof(int), SEEK_CUR);
+       return reg; 
+    }
+
+    fread(&(reg.proxLista), sizeof(long), 1, inFile);
+    fread(&(reg.codEstacao), sizeof(int), 1, inFile);
+    fread(&(reg.codLinha), sizeof(int), 1, inFile);
+    fread(&(reg.codProxEstacao), sizeof(int), 1, inFile);
+    fread(&(reg.distProxEstacao), sizeof(int), 1, inFile);
+    fread(&(reg.codLinhaIntegra), sizeof(int), 1, inFile);
+    fread(&(reg.codEstIntegra), sizeof(int), 1, inFile);
+
+    //Leitura dos dois campos de tamanho variável
+    for (int i = 0; i < MAX_NAME_LENGTH; i++)
+    {
+        char c = getc(inFile);
+        if(c == '|'){
+            tempString[i] = '\0';
+            break;
+        }
+        else
+            tempString[i] = c;
+    }
+    strcpy(reg.nomeEstacao, tempString);
+    
+
+    for (int i = 0; i < MAX_NAME_LENGTH; i++)
+    {
+        char c = getc(inFile);
+        if(c == '|'){
+            tempString[i] = '\0';
+            break;
+        }
+        else
+            tempString[i] = c;
+    }
+    strcpy(reg.nomeLinha, tempString);
+
+    return reg;
+}
+
+
 /*
 * FUNÇÕES EXTERNAS
 * Utilizadas fora de "aux.c"
+* Essas funções estão declaradas em "header.h"
 */
+
+//Lê o binário e imprime as informações de todos os registros não removidos
+void printBin(FILE* inFile) {
+    //Avança para o primeiro byte após o header
+    readHeader(inFile);
+
+    Register reg;
+    while ((reg = readRegister(inFile)).tamanhoRegistro > 0) {
+        printRegister(reg);
+        printf("\n");
+    }
+}
 
 //Função responsável por ler o csv e escrever os dados no arquivo binário
 void readCSV(FILE* inFile, FILE* outFile) {
-    char buff[MAX_NAME_LENGTH*2];
+    //Tamanho máximo do registro que será lido é MAX_NAME_LENGTH*3 por registro
+    //Esse tamanho é o suficiente para qualquer registro comum e previne erros que poderiam acontecer
+    //se alocação dinâmicafosse utilizada
+    char buff[MAX_NAME_LENGTH*3];
 
+    //Cria dado do tipo FileHeader, para escrita do cabeçalho
     FileHeader fileHeader;
     fileHeader.status = 1;
     fileHeader.topoLista = -1;
@@ -281,16 +377,14 @@ void readCSV(FILE* inFile, FILE* outFile) {
     fileHeader.nroParesEstacao = -1;
     writeHeader(outFile, fileHeader);
 
-    fgets(buff, (MAX_NAME_LENGTH*2)-4, (FILE*)inFile); //Pula a primeira linha (cabeçalho)
+    fgets(buff, (MAX_NAME_LENGTH*3)-2, (FILE*)inFile); //Pula a primeira linha (cabeçalho)
     while(1) {
-        if(fgets(buff, (MAX_NAME_LENGTH*2)-4, (FILE*)inFile) == NULL)
+        if(fgets(buff, (MAX_NAME_LENGTH*3)-2, (FILE*)inFile) == NULL)
             break;
 
         Register reg = stringToRegister(buff);
         
-        printRegister(reg);
         writeRegister(outFile, reg);
-        printf("\n");
     }
 
     return; 

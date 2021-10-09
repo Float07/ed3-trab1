@@ -9,4 +9,10 @@ int main(int argc, char *argv[]) {
 
     fclose(csvInput);
     fclose(binOutput);
+
+    FILE* binInput = fopen("binario.bin", "rb");
+
+    printBin(binInput);
+
+    fclose(binInput);
 }
