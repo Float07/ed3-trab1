@@ -127,7 +127,7 @@ Register registerStrToRegister(RegisterStr registerStr) {
     return reg;
 }
 
-//Transforma uma linha do .csv para um tipo RegisterStr
+//Transforma uma linha do .csv para um tipo Register
 Register stringToRegister(char* registerStr) {
     RegisterStr recoveredRegister;
     int i, j;
@@ -182,7 +182,7 @@ Register stringToRegister(char* registerStr) {
     recoveredRegister.codLinhaIntegra[i] = '\0';
 
     j += i + 1;
-    for (i = 0; registerStr[j+i] != '\n' && registerStr[j+i] != '\0'; i++)
+    for (i = 0; registerStr[j+i] != '\r' && registerStr[j+i] != '\n' && registerStr[j+i] != '\0'; i++)
     {
         recoveredRegister.codEstIntegra[i] = registerStr[j+i];
     }
