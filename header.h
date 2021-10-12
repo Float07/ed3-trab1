@@ -8,5 +8,8 @@ typedef struct Register Register;
 void printBin(FILE* inFile);
 void readCSV(FILE* inFile, FILE* outFile);
 
+void binarioNaTela(char *nomeArquivoBinario);
+void scan_quote_string(char *str);
+
 
 #endif 
