@@ -8,7 +8,8 @@
 //Esse tamanho é o suficiente para qualquer nome comum e torna o programa menos suscetível a erro
 //que usar alocação dinâmica
 #define MAX_NAME_LENGTH 1024
-#define BIN_HEADER_SIZE 17 //Quantidade de bytes do header no arquivo binário
+//Quantidade de bytes do header no arquivo binário
+#define BIN_HEADER_SIZE 17 
 
 //Usado para representar um registro.
 struct Register{
@@ -85,8 +86,8 @@ void printRegisterStr(RegisterStr reg) {
 Register registerStrToRegister(RegisterStr registerStr) {
     Register reg;
 
-    reg.removido = 0;
-    reg.tamanhoRegistro = 37 + 2; //Tamanho inicial mais o tamanho dos dois pipes, desconsiderando os campos de tamanho variável
+    reg.removido = '0';
+    reg.tamanhoRegistro = 32 + 2; //Tamanho inicial mais o tamanho dos dois pipes, desconsiderando os campos de tamanho variável
     reg.proxLista = -1;
 
 
@@ -249,6 +250,13 @@ int writeHeader(FILE* outFile, FileHeader fileHeader) {
     return 0;
 }
 
+//Muda o status do arquivo binário para consistente ou inconsistente
+void setConsistency(char consistency, FILE* outFile) {
+    fseek(outFile, 0, SEEK_SET);
+    fwrite(&consistency, sizeof(char), 1, outFile);
+    return;
+}
+
 //Escreve um registro no arquivo binário
 int writeRegister(FILE* outFile, Register reg) {
     //Escreve campos de tamanho fixo
@@ -371,7 +379,7 @@ void readCSV(FILE* inFile, FILE* outFile) {
 
     //Cria dado do tipo FileHeader, para escrita do cabeçalho
     FileHeader fileHeader;
-    fileHeader.status = 1;
+    fileHeader.status = '0';
     fileHeader.topoLista = -1;
     fileHeader.nroEstacoes = -1;
     fileHeader.nroParesEstacao = -1;
@@ -386,6 +394,8 @@ void readCSV(FILE* inFile, FILE* outFile) {
         
         writeRegister(outFile, reg);
     }
+
+    setConsistency('1', outFile);
 
     return; 
 }
