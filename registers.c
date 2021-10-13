@@ -196,7 +196,7 @@ Register stringToRegister(char* registerStr) {
 
 //Imprime os valores de um dado do tipo Register
 void printRegister(Register reg) {
-    if (reg.removido)
+    if (reg.removido == '1')
         return;
 
     int codEstacao = reg.codEstacao;
@@ -234,7 +234,7 @@ void printRegister(Register reg) {
     if(!strcmp(codEstIntegra, "-1"))
         strcpy(codEstIntegra, "NULO");
 
-    printf("%d %s %s %s %s %s %s %s", codEstacao, nomeEstacao, codLinha, nomeLinha, codProxEstacao,
+    printf("%d %s %s %s %s %s %s %s ", codEstacao, nomeEstacao, codLinha, nomeLinha, codProxEstacao,
     distProxEstacao, codLinhaIntegra, codEstIntegra);
 
     return;
@@ -308,9 +308,9 @@ Register readRegister(FILE* inFile) {
         return reg;
     }
     fread(&(reg.tamanhoRegistro), sizeof(int), 1, inFile);  
-    if (reg.removido) {
+    if (reg.removido == '1') {
         //Se o registro foi removido, posiciona o cursor no final do registro removido e o retorna
-       fseek(inFile, reg.tamanhoRegistro - sizeof(char) - sizeof(int), SEEK_CUR);
+       fseek(inFile, reg.tamanhoRegistro, SEEK_CUR);
        return reg; 
     }
 

@@ -25,6 +25,12 @@ void funcionalidade1() {
 void funcionalidade2() {
         char inputFileName[MAX_FILENAME_SIZE];
         scanf("%s", inputFileName);
+
+        FILE* inFile = fopen(inputFileName, "rb");
+        printBin(inFile);
+        fclose(inFile);
+
+        return;
 }
 
 int main(int argc, char *argv[]) {
