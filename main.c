@@ -3,7 +3,10 @@
 
 //Tamanho máximo dos nomes dos arquivos de input e output
 #define MAX_FILENAME_SIZE 256
-
+/*
+* Funções correspondentes a cada funcionalidade
+* Elas serão chamadas em um switch-case localizado na main
+*/
 void funcionalidade1() {
         char inputFileName[MAX_FILENAME_SIZE];
         char outputFileName[MAX_FILENAME_SIZE];

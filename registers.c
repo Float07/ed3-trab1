@@ -24,7 +24,7 @@ struct Register{
     int distProxEstacao;//4 bytes
     int codLinhaIntegra;//4 bytes
     int codEstIntegra;  //4 bytes
-    //Tamanho total dos campos fixos = 37
+    //Tamanho total dos campos fixos = 37 - 5 (removido e tamanhoRegistro não contam)
 
     //Campos de tamanho variável
     char nomeEstacao[MAX_NAME_LENGTH];
