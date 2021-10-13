@@ -1,0 +1,7 @@
+6 estacao23.bin 3
+1 codLinha 1
+2 codLinha 20 nomeLinha "Roxa"
+2 nomeEstacao "Engenheiro Goulart" nomeLinha "Jade"
+2 nomeEstacao "Goulart" distProxEstacao 101
+2 nomeLinha "Lilas" codEstacao 10
+1 nomeEstacao "Pinheiros"
