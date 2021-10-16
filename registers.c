@@ -297,6 +297,7 @@ FileHeader readHeader(FILE* inFile) {
 //Lê um registro do arquivo binário e retorna um Register
 //O cursor deve estar previamente posicionado no primeiro byte do registro
 //No final da execução, o cursor será posicionado no primeiro byte do registro seguinte
+//Caso chegue ao final do arquivo, será retornado um registro com tamanhoRegistro = 0
 Register readRegister(FILE* inFile) {
     Register reg;
     char tempString[MAX_NAME_LENGTH];
@@ -360,32 +361,77 @@ Register readRegister(FILE* inFile) {
 }
 
 //Recebe um registro e verifica se ele atende ao requisito de busca
-//Retorna: um valor diferente de 0 se o campo sendo checado assume o valor desejado, senão retorna 0
+//Retorna: um valor diferente de 0 se os campos sendo checados assumem o valor desejado, senão retorna 0
 //Parâmetros:
 //*reg -> registro que será checado
-//*field -> nome do campo que será checado
-//*intValue -> valor desejado do campo se o campo a ser checado for um inteiro
-//  se o campo a ser checado não for inteiro, qualquer valor pode ser passado para este parâmetro
-//*strValue -> valor desejado do campo se o campo a ser checado for uma string
-//  se o campo a ser checado não for uma string, qualquer valor pode ser passado para este parâmetro
-int checkRegister(Register reg, char* field, int intValue, char* strValue) {
-    if(!strcmp(field, "codEstacao")){
-        return reg.codEstacao == intValue;
-    }else if(!strcmp(field, "codLinha")){
-        return reg. codLinha == intValue;
-    }else if(!strcmp(field, "codProxEstacao")){
-        return reg.codProxEstacao == intValue;
-    }else if(!strcmp(field, "distProxEstacao")){
-        return reg.distProxEstacao == intValue;
-    }else if(!strcmp(field, "codLinhaIntegra")){
-        return reg.codLinhaIntegra == intValue;
-    }else if(!strcmp(field, "codEstIntegra")){
-        return reg.codEstIntegra == intValue;
-    }else if(!strcmp(field, "nomeEstacao")){
-        return strcmp(reg.nomeEstacao, strValue);
-    }else{
-        return strcmp(reg.nomeLinha, strValue);
+//Veja "getNextMatchingRegister" para descrição dos outros parâmetros
+int checkRegister(Register reg, char* field, int* intValue, char** strValue) {
+    if(field[0]){
+        if(reg.codEstacao != intValue[0])
+            return 0;
     }
+    
+    if(field[1]){
+        if(reg. codLinha != intValue[1])
+            return 0;
+    }
+    if(field[2]){
+        if(reg.codProxEstacao != intValue[2])
+            return 0;
+    }
+    if(field[3]){
+        if(reg.distProxEstacao != intValue[3])
+            return 0;
+    }
+    
+    if(field[4]){
+        if(reg.codLinhaIntegra != intValue[4])
+            return 0;
+    }
+    
+    if(field[5]){
+        if(reg.codEstIntegra != intValue[5])
+            return 0;
+    }
+    
+    if(field[6]){
+        if(strcmp(reg.nomeEstacao, strValue[0]))
+            return 0;
+    }
+    
+    if(field[7]){
+        if (strcmp(reg.nomeLinha, strValue[1]))
+            return 0;
+    }
+
+    //Todas as verificações realizadas foram um sucesso!
+    return 1;
+}
+
+//Retorna o próximo registro (buscando a partir do cursor do arquivo) que atende ao critério de busca
+//Caso o fim do arquivo seja alcançado sem que o critério seja atendido, é retornado um registro com taramnhoRegistro = 0
+//O cursor do arquivo deve estar posicionado no início de um registro 
+//Caso um registro seja encontrado, o cursor será posicionado no primeiro byte do registro seguinte
+//Caso não seja encontrado um registro, o cursor será posicionado no final do arquivo
+//Parâmetros:
+//*inFile -> Arquivo no qual será buscado um registro que atende ao critério 
+//*field -> vetor que indica quais campos serão considerados. 1 - Será considerado / 0 - Não será considerado
+//  É um vetor de 8 elementos, onde cada elemento indica se os seguintes campos serão considerados, nessa ordem:
+//  codEstacao, codLinha, codProxEstacao, distProxEstacao, codLinhaIntegra, codEstIntegra, nomeEstacao, nomeLinha
+//*intValue -> Valores desejados para os campos do tipo inteiro
+//  É um vetor de 6 inteiros, onde cada elemento indica o valor desejado para os seguintes campos, nessa ordem:
+//  codEstacao, codLinha, codProxEstacao, distProxEstacao, codLinhaIntegra, codEstIntegra
+//*strValue -> Valores desejados para os campos do tipo string
+//  É um vetor de 2 strings, onde cada string indica o valor desejado para os seguintes campos, nessa ordem:
+//  nomeEstacao, nomeLinha
+//Os elementos de intValue ou strValue que indicam campos que não serão usados na busca podem assumir qualquer valor
+Register getNextMatchingRegister(FILE* inFile, char* field, int* intValue, char** strValue) {
+    Register reg;
+    
+    while ((reg = readRegister(inFile)).tamanhoRegistro 
+            && !checkRegister(reg, field, intValue, strValue));
+    
+    return reg;
 }
 
 /*

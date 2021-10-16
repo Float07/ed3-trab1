@@ -36,6 +36,10 @@ void funcionalidade2() {
         return;
 }
 
+void funcionalidade3() {
+
+}
+
 int main(int argc, char *argv[]) {
     int funcionalidade; //Irá registrar a funcionalidade escolhida pelo usuário
 
@@ -52,6 +56,11 @@ int main(int argc, char *argv[]) {
     //Imprime todos os dados de um arquivo binário
     case 2:
         funcionalidade2();
+        break;
+
+    //Imprime todos os registros que atendem a um critério
+    case 3:
+        funcionalidade3();
         break;
 
     default:
