@@ -321,17 +321,20 @@ Register readRegister(FILE* inFile) {
     fread(&(reg.distProxEstacao), sizeof(int), 1, inFile);
     fread(&(reg.codLinhaIntegra), sizeof(int), 1, inFile);
     fread(&(reg.codEstIntegra), sizeof(int), 1, inFile);
+    int tamanhoRestante = reg.tamanhoRegistro - 32;
 
     //Leitura dos dois campos de tamanho variável
     for (int i = 0; i < MAX_NAME_LENGTH; i++)
     {
         char c = getc(inFile);
+        tamanhoRestante--;
         if(c == '|'){
             tempString[i] = '\0';
             break;
         }
-        else
+        else{
             tempString[i] = c;
+        }
     }
     strcpy(reg.nomeEstacao, tempString);
     
@@ -339,14 +342,19 @@ Register readRegister(FILE* inFile) {
     for (int i = 0; i < MAX_NAME_LENGTH; i++)
     {
         char c = getc(inFile);
+        tamanhoRestante--;
         if(c == '|'){
             tempString[i] = '\0';
             break;
         }
-        else
+        else{
             tempString[i] = c;
+        }
     }
     strcpy(reg.nomeLinha, tempString);
+
+    //Pula o "lixo" caso exista. Caso não exista, tamanhoRestante será igual a 0
+    fseek(inFile, tamanhoRestante, SEEK_CUR);
 
     return reg;
 }
