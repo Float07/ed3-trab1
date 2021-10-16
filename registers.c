@@ -3,11 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "header.h"
 
-//Tamanho máximo de um nomeEstacao ou nomeLinha que pode ser lido.
-//Esse tamanho é o suficiente para qualquer nome comum e torna o programa menos suscetível a erro
-//que usar alocação dinâmica
-#define MAX_NAME_LENGTH 1024
+
 //Quantidade de bytes do header no arquivo binário
 #define BIN_HEADER_SIZE 17 
 
