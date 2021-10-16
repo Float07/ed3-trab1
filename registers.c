@@ -359,6 +359,34 @@ Register readRegister(FILE* inFile) {
     return reg;
 }
 
+//Recebe um registro e verifica se ele atende ao requisito de busca
+//Retorna: um valor diferente de 0 se o campo sendo checado assume o valor desejado, senão retorna 0
+//Parâmetros:
+//*reg -> registro que será checado
+//*field -> nome do campo que será checado
+//*intValue -> valor desejado do campo se o campo a ser checado for um inteiro
+//  se o campo a ser checado não for inteiro, qualquer valor pode ser passado para este parâmetro
+//*strValue -> valor desejado do campo se o campo a ser checado for uma string
+//  se o campo a ser checado não for uma string, qualquer valor pode ser passado para este parâmetro
+int checkRegister(Register reg, char* field, int intValue, char* strValue) {
+    if(!strcmp(field, "codEstacao")){
+        return reg.codEstacao == intValue;
+    }else if(!strcmp(field, "codLinha")){
+        return reg. codLinha == intValue;
+    }else if(!strcmp(field, "codProxEstacao")){
+        return reg.codProxEstacao == intValue;
+    }else if(!strcmp(field, "distProxEstacao")){
+        return reg.distProxEstacao == intValue;
+    }else if(!strcmp(field, "codLinhaIntegra")){
+        return reg.codLinhaIntegra == intValue;
+    }else if(!strcmp(field, "codEstIntegra")){
+        return reg.codEstIntegra == intValue;
+    }else if(!strcmp(field, "nomeEstacao")){
+        return strcmp(reg.nomeEstacao, strValue);
+    }else{
+        return strcmp(reg.nomeLinha, strValue);
+    }
+}
 
 /*
 * FUNÇÕES EXTERNAS
