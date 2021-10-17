@@ -446,7 +446,6 @@ Register getNextMatchingRegister(FILE* inFile, char* fields, int* intValues, cha
 //*inFile -> Arquivo binário que terá seus valores impressos
 //Veja a documentação de "getNextMatchingRegister" para descrição dos outros parâmetros
 void printMatchingBin(FILE* inFile, char* fields, int* intValues, char** strValues) {
-    fseek(inFile, 0, SEEK_SET);
     readHeader(inFile);
 
     Register reg;
