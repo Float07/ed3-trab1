@@ -42,7 +42,7 @@ void funcionalidade2() {
 //Os parâmetros que são ponteiros terão os valores apontados modificados durante a execução
 //Parâmetros:
 //*qtdCampos -> quantidade de campos que serão considerados durante a busca
-//*field -> deve ser um vetor de tamanho 8 com todos seus elementos iguais a 0
+//*fields -> deve ser um vetor de tamanho 8 com todos seus elementos iguais a 0
 //  Após a execução, cada elemento desse vetor irá indicar se cada um dos 8 campos será considerado durante a busca
 //  1 - Será considerado / 2 - Não será considerado
 //*intValues -> deve ser um vetor de tamanho 6
@@ -92,7 +92,7 @@ void getSearchCriteria(int qtdCampos, char* field, int* intValues, char** strVal
 }
 
 void funcionalidade3() {
-    //Veja a documentação de getSearchCriteria para melhor entender o significado de field, intValues e strValues
+    //Veja a documentação de getSearchCriteria para melhor entender o significado de fields, intValues e strValues
     int qtdCampos;
     char fileName[MAX_FILENAME_SIZE];
     char fields[] = {0, 0, 0, 0, 0, 0, 0, 0};
