@@ -9,9 +9,12 @@
 typedef struct Register Register;
 
 
+//registers.c
 void printBin(FILE* inFile);
 void readCSV(FILE* inFile, FILE* outFile);
+void printMatchingBin(FILE* inFile, char* fields, int* intValues, char** strValues);
 
+//funcoesFornecidas.c
 void binarioNaTela(char *nomeArquivoBinario);
 void scan_quote_string(char *str);
 

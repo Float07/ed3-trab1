@@ -358,47 +358,50 @@ Register readRegister(FILE* inFile) {
     return reg;
 }
 
-//Recebe um registro e verifica se ele atende ao requisito de busca
+//Recebe um registro e verifica se ele atende ao critério de busca
 //Retorna: um valor diferente de 0 se os campos sendo checados assumem o valor desejado, senão retorna 0
 //Parâmetros:
 //*reg -> registro que será checado
-//Veja "getNextMatchingRegister" para descrição dos outros parâmetros
-int checkRegister(Register reg, char* field, int* intValue, char** strValue) {
-    if(field[0]){
-        if(reg.codEstacao != intValue[0])
+//Veja a documentação de "getNextMatchingRegister" para descrição dos outros parâmetros
+int checkRegister(Register reg, char* fields, int* intValues, char** strValues) {
+    if(reg.removido == '1')
+        return 0;
+    
+    if(fields[0]){
+        if(reg.codEstacao != intValues[0])
             return 0;
     }
     
-    if(field[1]){
-        if(reg. codLinha != intValue[1])
+    if(fields[1]){
+        if(reg. codLinha != intValues[1])
             return 0;
     }
-    if(field[2]){
-        if(reg.codProxEstacao != intValue[2])
+    if(fields[2]){
+        if(reg.codProxEstacao != intValues[2])
             return 0;
     }
-    if(field[3]){
-        if(reg.distProxEstacao != intValue[3])
-            return 0;
-    }
-    
-    if(field[4]){
-        if(reg.codLinhaIntegra != intValue[4])
+    if(fields[3]){
+        if(reg.distProxEstacao != intValues[3])
             return 0;
     }
     
-    if(field[5]){
-        if(reg.codEstIntegra != intValue[5])
+    if(fields[4]){
+        if(reg.codLinhaIntegra != intValues[4])
             return 0;
     }
     
-    if(field[6]){
-        if(strcmp(reg.nomeEstacao, strValue[0]))
+    if(fields[5]){
+        if(reg.codEstIntegra != intValues[5])
             return 0;
     }
     
-    if(field[7]){
-        if (strcmp(reg.nomeLinha, strValue[1]))
+    if(fields[6]){
+        if(strcmp(reg.nomeEstacao, strValues[0]))
+            return 0;
+    }
+    
+    if(fields[7]){
+        if (strcmp(reg.nomeLinha, strValues[1]))
             return 0;
     }
 
@@ -413,21 +416,21 @@ int checkRegister(Register reg, char* field, int* intValue, char** strValue) {
 //Caso não seja encontrado um registro, o cursor será posicionado no final do arquivo
 //Parâmetros:
 //*inFile -> Arquivo no qual será buscado um registro que atende ao critério 
-//*field -> vetor que indica quais campos serão considerados. 1 - Será considerado / 0 - Não será considerado
+//*fields -> vetor que indica quais campos serão considerados. 1 - Será considerado / 0 - Não será considerado
 //  É um vetor de 8 elementos, onde cada elemento indica se os seguintes campos serão considerados, nessa ordem:
 //  codEstacao, codLinha, codProxEstacao, distProxEstacao, codLinhaIntegra, codEstIntegra, nomeEstacao, nomeLinha
-//*intValue -> Valores desejados para os campos do tipo inteiro
+//*intValues -> Valores desejados para os campos do tipo inteiro
 //  É um vetor de 6 inteiros, onde cada elemento indica o valor desejado para os seguintes campos, nessa ordem:
 //  codEstacao, codLinha, codProxEstacao, distProxEstacao, codLinhaIntegra, codEstIntegra
-//*strValue -> Valores desejados para os campos do tipo string
+//*strValues -> Valores desejados para os campos do tipo string
 //  É um vetor de 2 strings, onde cada string indica o valor desejado para os seguintes campos, nessa ordem:
 //  nomeEstacao, nomeLinha
 //Os elementos de intValue ou strValue que indicam campos que não serão usados na busca podem assumir qualquer valor
-Register getNextMatchingRegister(FILE* inFile, char* field, int* intValue, char** strValue) {
+Register getNextMatchingRegister(FILE* inFile, char* fields, int* intValues, char** strValues) {
     Register reg;
     
     while ((reg = readRegister(inFile)).tamanhoRegistro 
-            && !checkRegister(reg, field, intValue, strValue));
+            && !checkRegister(reg, fields, intValues, strValues));
     
     return reg;
 }
@@ -437,6 +440,23 @@ Register getNextMatchingRegister(FILE* inFile, char* field, int* intValue, char*
 * Utilizadas fora de "aux.c"
 * Essas funções estão declaradas em "header.h"
 */
+
+//Imprime os registros de um binário que atendem ao critério de busca
+//Parâmetros:
+//*inFile -> Arquivo binário que terá seus valores impressos
+//Veja a documentação de "getNextMatchingRegister" para descrição dos outros parâmetros
+void printMatchingBin(FILE* inFile, char* fields, int* intValues, char** strValues) {
+    fseek(inFile, 0, SEEK_SET);
+    readHeader(inFile);
+
+    Register reg;
+    while ((reg = getNextMatchingRegister(inFile, fields, intValues, strValues)).tamanhoRegistro){
+        printRegister(reg);
+        printf("\n");
+    }
+    
+    return;
+}
 
 //Lê o binário e imprime as informações de todos os registros não removidos
 void printBin(FILE* inFile) {
