@@ -238,6 +238,8 @@ void printRegister(Register reg) {
     return;
 }
 
+
+
 //Escreve o cabeçalho no arquivo binário
 int writeHeader(FILE* outFile, FileHeader fileHeader) {
     fseek(outFile, 0, SEEK_SET);
