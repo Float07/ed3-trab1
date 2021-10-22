@@ -117,6 +117,40 @@ void funcionalidade3() {
     return;
 }
 
+void funcionalidade4() {
+    //Veja a documentação de getSearchCriteria para melhor entender o significado de fields, intValues e strValues
+    int qtdRemocoes;
+    char fileName[MAX_FILENAME_SIZE];
+    char fields[] = {0, 0, 0, 0, 0, 0, 0, 0};
+    
+    int intValues[] = {0, 0, 0, 0, 0, 0}; 
+
+    char str1[MAX_NAME_LENGTH];
+    char str2[MAX_NAME_LENGTH];
+    char* strValues[2];
+    strValues[0] = str1;
+    strValues[1] = str2;
+
+    scanf("%s", fileName);
+    scanf("%d", &qtdRemocoes);
+
+    for (int i = 0; i < qtdRemocoes; i++)
+    {
+        int qtdCampos;
+        scanf("%d", &qtdCampos);
+
+        getSearchCriteria(qtdCampos, fields, intValues, strValues);
+        
+        FILE* outFile = fopen(fileName, "rb+");
+        deleteMatchingBin(outFile, fields, intValues, strValues);
+        fclose(outFile);
+    }
+
+    binarioNaTela(fileName);
+    
+    return;
+}
+
 
 int main(int argc, char *argv[]) {
     int funcionalidade; //Irá registrar a funcionalidade escolhida pelo usuário
@@ -139,6 +173,10 @@ int main(int argc, char *argv[]) {
     //Imprime todos os registros que atendem a um critério
     case 3:
         funcionalidade3();
+        break;
+    
+    case 4:
+        funcionalidade4();
         break;
 
     default:
