@@ -10,9 +10,12 @@ typedef struct Register Register;
 
 
 //registers.c
+void deleteMatchingBin(FILE* outFile, char* fields, int* intValues, char** strValues);
 void printBin(FILE* inFile);
 void readCSV(FILE* inFile, FILE* outFile);
 void printMatchingBin(FILE* inFile, char* fields, int* intValues, char** strValues);
+long* getAllMatchingRegistersOffset(FILE* inFile, char* fields, int* intValues, char** strValues);
+void updateRegisterByOffset(FILE* outFile, long offset, char* fields, int* intValues, char** strValues);
 
 //funcoesFornecidas.c
 void binarioNaTela(char *nomeArquivoBinario);

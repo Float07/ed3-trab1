@@ -38,7 +38,7 @@ void funcionalidade2() {
         return;
 }
 
-//Lê input do usuário para conseguir os critérios de busca
+//Lê input do usuário para conseguir os critérios de busca ou campos a serem atualizados
 //Os parâmetros que são ponteiros terão os valores apontados modificados durante a execução
 //Parâmetros:
 //*qtdCampos -> quantidade de campos que serão considerados durante a busca
@@ -53,8 +53,7 @@ void funcionalidade2() {
 //  Elementos correspondentes a campos que não serão considerados durante a busca podem assumir qualquer valor
 //
 //Os elementos desses 3 vetores representam os campos na mesma ordem que os campos aparecem nos registros
-//Os valores obtidos nessa função serão utilizados na função "getNextMatchingRegister" no módulo "registers.c"
-void getSearchCriteria(int qtdCampos, char* field, int* intValues, char** strValues) {
+void getSearchCriteria(int qtdCampos, char* fields, int* intValues, char** strValues) {
 
     //Recebe quais campos serão analisados e quais os valores desejados
     for (int i = 0; i < qtdCampos; i++)
@@ -63,28 +62,28 @@ void getSearchCriteria(int qtdCampos, char* field, int* intValues, char** strVal
         scanf("%s", nomeCampo);
 
         if(!strcmp(nomeCampo, "codEstacao")){
-            field[0] = 1;
+            fields[0] = 1;
             scanf("%d", &(intValues[0]));
         }else if(!strcmp(nomeCampo, "codLinha")){
-            field[1] = 1;
+            fields[1] = 1;
             scanf("%d", &(intValues[1]));
         }else if(!strcmp(nomeCampo, "codProxEstacao")){
-            field[2] = 1;
+            fields[2] = 1;
             scanf("%d", &(intValues[2]));
         }else if(!strcmp(nomeCampo, "distProxEstacao")){
-            field[3] = 1;
+            fields[3] = 1;
             scanf("%d",&(intValues[3]));
         }else if(!strcmp(nomeCampo, "codLinhaIntegra")){
-            field[4] = 1;
+            fields[4] = 1;
             scanf("%d", &(intValues[4]));
         }else if(!strcmp(nomeCampo, "codEstIntegra")){
-            field[5] = 1;
+            fields[5] = 1;
             scanf("%d", &(intValues[5]));
         }else if(!strcmp(nomeCampo, "nomeEstacao")){
-            field[6] = 1;
+            fields[6] = 1;
             scan_quote_string(strValues[0]);
         }else if(!strcmp(nomeCampo, "nomeLinha")){
-            field[7] = 1;
+            fields[7] = 1;
             scan_quote_string(strValues[1]);
         }
     }
@@ -117,6 +116,95 @@ void funcionalidade3() {
     return;
 }
 
+void funcionalidade4() {
+    //Veja a documentação de getSearchCriteria para melhor entender o significado de fields, intValues e strValues
+    int qtdRemocoes;
+    char fileName[MAX_FILENAME_SIZE];
+    char fields[] = {0, 0, 0, 0, 0, 0, 0, 0};
+    
+    int intValues[] = {0, 0, 0, 0, 0, 0}; 
+
+    char str1[MAX_NAME_LENGTH];
+    char str2[MAX_NAME_LENGTH];
+    char* strValues[2];
+    strValues[0] = str1;
+    strValues[1] = str2;
+
+    scanf("%s", fileName);
+    scanf("%d", &qtdRemocoes);
+
+    for (int i = 0; i < qtdRemocoes; i++)
+    {
+        int qtdCampos;
+        scanf("%d", &qtdCampos);
+
+        getSearchCriteria(qtdCampos, fields, intValues, strValues);
+        
+        FILE* outFile = fopen(fileName, "rb+");
+        deleteMatchingBin(outFile, fields, intValues, strValues);
+        fclose(outFile);
+    }
+
+    binarioNaTela(fileName);
+    
+    return;
+}
+
+void funcionalidade6() {
+     //Veja a documentação de getSearchCriteria para melhor entender o significado de fields, intValues e strValues
+    int qtdUpdates;
+    char fileName[MAX_FILENAME_SIZE];
+
+    char fields[] = {0, 0, 0, 0, 0, 0, 0, 0};
+    char fieldsUpdate[] = {0, 0, 0, 0, 0, 0, 0, 0};
+    
+    int intValues[] = {0, 0, 0, 0, 0, 0};
+    int intValuesUpdate[] = {0, 0, 0, 0, 0, 0}; 
+
+    char str1[MAX_NAME_LENGTH];
+    char str2[MAX_NAME_LENGTH];
+    char* strValues[2];
+    strValues[0] = str1;
+    strValues[1] = str2;
+    char str1Update[MAX_NAME_LENGTH];
+    char str2Update[MAX_NAME_LENGTH];
+    char* strValuesUpdate[2];
+    strValues[0] = str1Update;
+    strValues[1] = str2Update;
+
+    scanf("%s", fileName);
+    scanf("%d", &qtdUpdates);
+
+    //Realiza a quantidade requisitada de atualizações
+    for (int i = 0; i < qtdUpdates; i++)
+    {
+        //Coleta os critérios de busca
+        int qtdeParametrosBusca;
+        scanf("%d", &qtdeParametrosBusca);
+        getSearchCriteria(qtdeParametrosBusca, fields, intValues, strValues);
+
+        //Coleta as informações sobre como o registro será atualizado
+        int qtdeParametrosUpdate;
+        scanf("%d", &qtdeParametrosUpdate);
+        getSearchCriteria(qtdeParametrosUpdate, fieldsUpdate, intValuesUpdate, strValuesUpdate);
+
+        //Recebe os offsets dos registros a serem atualizados
+        FILE* outFile = fopen(fileName, "rb+");
+        long* offsets = getAllMatchingRegistersOffset(outFile, fields, intValues, strValues);
+
+        //Atualiza os registros nos offsets recebidos com as informações desejadas
+        for (int j = 0; j < offsets[0]; j++)
+        {
+            updateRegisterByOffset(outFile, offsets[j+1], fieldsUpdate, intValuesUpdate, strValuesUpdate);
+        }
+        
+
+        fclose(outFile);
+    }
+    
+    return;
+}
+
 
 int main(int argc, char *argv[]) {
     int funcionalidade; //Irá registrar a funcionalidade escolhida pelo usuário
@@ -139,6 +227,14 @@ int main(int argc, char *argv[]) {
     //Imprime todos os registros que atendem a um critério
     case 3:
         funcionalidade3();
+        break;
+    
+    case 4:
+        funcionalidade4();
+        break;
+
+    case 6:
+        funcionalidade6();
         break;
 
     default:

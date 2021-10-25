@@ -362,6 +362,13 @@ Register readRegister(FILE* inFile) {
     return reg;
 }
 
+//Retorna o registro na posição "offset" do arquivo "inFile"
+Register getRegisterByOffset(FILE* inFile, long offset) {
+    fseek(inFile, offset, SEEK_SET);
+    Register reg = readRegister(inFile);
+    return reg;
+}
+
 //Recebe um registro e verifica se ele atende ao critério de busca
 //Retorna: um valor diferente de 0 se os campos sendo checados assumem o valor desejado, senão retorna 0
 //Parâmetros:
@@ -436,6 +443,107 @@ Register getNextMatchingRegister(FILE* inFile, char* fields, int* intValues, cha
     while ((reg = readRegister(inFile)).tamanhoRegistro 
             && !checkRegister(reg, fields, intValues, strValues));
     
+    return reg;
+}
+
+//Mesmo funcionamento de "getNextMatchingRegister", mas retorna o offset do registro, e não o registro em si
+//Caso não exista registro que atenda aos requisitos, é retornado -1
+//Caso um registro seja encontrado, o cursor será posicionado no primeiro byte do registro seguinte
+//Caso não seja encontrado um registro, o cursor será posicionado no final do arquivo
+//Parâmetros:
+//*curOffset -> Offset onde o cursor do arquivo está posicionado atualmente
+//*regSize -> Ponteiro para um inteiro onde será salvo o tamanho do registro encontrado (deve ser NULO caso não se deseje saber o tamanho do registro) 
+//Veja a documentação de "getNextMatchingRegister" para descrição dos outros parâmetros
+long getNextMatchingRegisterOffset(FILE* inFile, char* fields, int* intValues, char** strValues, long curOffset, int* regSize) {
+    fseek(inFile, curOffset, SEEK_SET);
+    Register reg;
+
+    while ((reg = readRegister(inFile)).tamanhoRegistro 
+            && !checkRegister(reg, fields, intValues, strValues))
+    {
+        //Soma 5 devido aos campos "removido" e "tamanhoRegistro", que não estão inclusos no "tamanhoRegistro"
+        curOffset += reg.tamanhoRegistro + 5;
+    }
+    
+    if(regSize) {
+        *regSize = reg.tamanhoRegistro;
+    }
+
+    if(reg.tamanhoRegistro)
+        return curOffset;
+    else
+        return -1;
+}
+
+//Marca um registro como deletado, dado seu offset no arquivo binário
+//Altera os campos "removido" e "proxLista" do registro
+//Não altera o campo "topoLista" do cabeçalho
+//Parâmetros:
+//*outFile -> Arquivo no qual o registro será deletado
+//*offset -> Posição do primeiro byte do registro a ser deletado
+//*listHead -> Offset do topo da lista encadeada de registros removidos
+void deleteRegisterByOffset(FILE* outFile, long offset, long listHead) {
+    fseek(outFile, offset, SEEK_SET);
+
+    fwrite("1", sizeof(char), 1, outFile);//Marca como removido
+    fseek(outFile, 4, SEEK_CUR);//Avança para o campo "proxLista"
+    fwrite(&listHead, sizeof(long), 1, outFile);//Aponta para o registro removido anteriormente
+
+    return;
+}
+
+//Deleta todos os registros nos offsets de um dado vetor
+//Atualiza os campos "removido" e "proxLista" dos registro e o campo "topoLista" do cabeçalho
+//Parâmetros:
+//*outFile -> Arquivo no qual serão deletados os registros
+//  O arquivo deve estar aberto no modo "rb+"
+//*offsets -> Vetor de offsets de registros. O primeiro elemento indica a quantidade de offsets presentes
+void deleteRegistersByOffset(FILE* outFile, long* offsets) {
+    FileHeader FileHeader = readHeader(outFile);
+    long topoList = FileHeader.topoLista;
+
+    int offsetsAmount = (int)offsets[0];
+    for (size_t i = 0; i < offsetsAmount; i++)
+    {
+        deleteRegisterByOffset(outFile, offsets[i+1], topoList);
+        topoList = offsets[i+1];
+    }
+
+    FileHeader.topoLista = topoList;
+    writeHeader(outFile, FileHeader);
+    
+    return;
+}
+
+//Retorna um registro atualizado
+//Parâmetros:
+//*reg -> Registro que será atualizado
+//*fields -> Vetor de tamanho 8 que indica quais campos serão atualizados, na ordem que os campos estão presentes no registro
+//  1 - O campo será atualizado / 0 - O campo permanecerá como está
+//*intValues -> Vetor de tamanho 6 que indica os novos valores dos campos do tipo inteiro que serão atualizados, na ordem que esses campos estão presentes no registro
+//  Elementos correspondentes aos campos que não serão atualizados podem assumir qualquer valor
+//*strValues -> Vetor de tamanho 2 que indica os novos valores dos campos do tipo string que serão atualizados, na ordem que esses campos estão presentes no registro
+//  Elementos correspondentes aos campos que não serão atualizados podem assumir qualquer valor
+Register updateRegister(Register reg, char* fields, int* intValues, char** strValues) {
+    if(fields[0])
+        reg.codEstacao = intValues[0];
+    if(fields[1])
+        reg.codLinha = intValues[1];
+    if(fields[2])
+        reg.codProxEstacao = intValues[2];
+    if(fields[3])
+        reg.distProxEstacao = intValues[3];
+    if(fields[4])
+        reg.codLinhaIntegra = intValues[4];
+    if(fields[5])
+        reg.codEstIntegra = intValues[5];
+    if(fields[6])
+        strcpy(reg.nomeEstacao, strValues[0]);
+    if(fields[7])
+        strcpy(reg.nomeLinha, strValues[1]);
+
+    reg.tamanhoRegistro = 34 + strlen(reg.nomeEstacao) + strlen(reg.nomeLinha);
+
     return reg;
 }
 
@@ -576,4 +684,69 @@ void readCSV(FILE* inFile, FILE* outFile) {
     setConsistency('1', outFile);
 
     return; 
+}
+
+//Remove todos os registros que atendem a um critério de busca
+//Parâmetros:
+//*outFile -> Arquivo binário de onde os registros serão removidos
+//  O arquivo deve estar aberto como "rb+"
+void deleteMatchingBin(FILE* outFile, char* fields, int* intValues, char** strValues) {
+    long* offsets = getAllMatchingRegistersOffset(outFile, fields, intValues, strValues);
+    
+    for (int i = 0; i < offsets[0]; i++)
+    {
+        deleteRegistersByOffset(outFile, offsets);
+    }
+    
+
+    free(offsets);
+    return;
+}
+
+//Retorna um vetor com todos os offsets dos registros que atendem a um critério de busca
+//O primeiro elemento do vetor indica quantos offsets estão presentes no restante do vetor
+//Parâmetros:
+//Veja a documentação de "getNextMatchingRegister" para descrição dos parâmetros
+long* getAllMatchingRegistersOffset(FILE* inFile, char* fields, int* intValues, char** strValues) {
+    long* offsets;
+    offsets = (long*)malloc(sizeof(long) * 1);
+
+    long offset = BIN_HEADER_SIZE;//Offset inicializa para o primeiro byte após o header
+    int regSize;//Receberá o tamanho do registro recuperado por referência
+    while((offset = getNextMatchingRegisterOffset(inFile, fields, intValues, strValues, offset, &regSize)) != -1){
+        offsets[0]++;
+        offsets = (long*)realloc(offsets, (offsets[0]+1)*sizeof(long));
+        offsets[offsets[0]] = offset;
+        offset += regSize + 5;
+    }
+
+    return offsets;
+}
+
+//Atualiza os campos de um registro dado seu offset
+//Parâmetros:
+//*outFile -> Arquivo binário onde os registros serão atualizados
+//  Deve estar aberto no modo"rb+"
+//*offset -> offset do registro que será atualizado
+//Veja a documentação de "updateRegister" para informações sobre os outros parâmetros   
+void updateRegisterByOffset(FILE* outFile, long offset, char* fields, int* intValues, char** strValues) {
+    Register reg = getRegisterByOffset(outFile, offset);
+    Register updatedReg = updateRegister(reg, fields, intValues, strValues);
+
+    if(updatedReg.tamanhoRegistro > reg.tamanhoRegistro){
+        //Remove e insere o registro
+        //PRECISA DA FUNCIONALIDADE DE INSERÇÃO
+    }else{
+        //Insere no mesmo lugar
+        int garbageAmount = reg.tamanhoRegistro - updatedReg.tamanhoRegistro;
+        fseek(outFile, offset, SEEK_SET);
+        writeRegister(outFile, updatedReg);
+        //Preenche o restante com $ para indicar lixo
+        for (int i = 0; i < garbageAmount; i++)
+        {
+            fwrite("$", sizeof(char), 1, outFile);
+        }
+    }
+
+    return;
 }
