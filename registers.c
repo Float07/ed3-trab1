@@ -473,6 +473,81 @@ void printBin(FILE* inFile) {
     }
 }
 
+
+/*Funcao para contar o numero de estacoes diferente*/
+
+int atualizaNroEstacoes (FILE* outFile){
+    int i, nEst = 0, tamanho;
+    char removido, letra;
+
+    /*Cria-se uma lista para guardar o nome das estacoes para verificacao posterior*/
+    struct listaEstacoes
+    {
+        int cabeca;
+        char estacao[MAX_NAME_LENGTH];
+        struct listaEstacoes *prox;
+        
+    };
+    typedef struct listaEstacoes listaEstacoes;
+
+    listaEstacoes lista, *percorre, *aux;
+    listaEstacoes *compara;
+
+    aux = NULL;
+    percorre = NULL;
+
+    lista.cabeca = 1;
+    lista.estacao[0]=0;
+    lista.prox = NULL;
+
+
+    fseek(outFile, 17, SEEK_SET); //Pula o cabecalio
+    
+    /*Coloca-se os nomes na lista*/
+    while (fread(&removido, sizeof(char), 1, outFile)==1)
+    {
+
+        if(removido==1){                 //Verifica se o registro foi removido
+            fread(&tamanho, sizeof(int), 1, outFile);
+            fseek(outFile, (tamanho-5), SEEK_CUR);
+            continue;
+        }
+
+        fseek(outFile, 36, SEEK_SET);       //Pula para o campo com o nome da estacao
+
+        aux = (listaEstacoes*)malloc(sizeof(listaEstacoes));
+        aux->cabeca = 0;
+        aux->prox = NULL;
+        aux->estacao[0] = 0;
+        
+        if(lista.prox==NULL){
+            percorre = &lista;
+        }
+
+        /*Comeca a le a o nome da estacao e salva em estacao*/
+        i = 0;
+        fread(&letra, sizeof(char), 1, outFile);
+        while (letra=!'|')
+        {
+            aux->estacao[i] = letra;
+            i++;
+            fread(&letra, sizeof(char), 1, outFile);
+        }
+
+        fread(&letra, sizeof(char), 1, outFile);
+        while (letra=!'|')
+        {
+            fread(&letra, sizeof(char), 1, outFile);
+        }
+        percorre->prox = aux;
+        percorre = aux;
+    }
+
+    /*Conta-se a quantidade de número diferentes*/
+
+
+}
+
 //Função responsável por ler o csv e escrever os dados no arquivo binário
 void readCSV(FILE* inFile, FILE* outFile) {
     //Tamanho máximo do registro que será lido é MAX_NAME_LENGTH*3 por registro
