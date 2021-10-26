@@ -15,7 +15,7 @@ void funcionalidade1() {
         scanf("%s %s", inputFileName, outputFileName);
 
         FILE* csvInput = fopen(inputFileName, "r");
-        FILE* binOutput = fopen(outputFileName, "wb");
+        FILE* binOutput = fopen(outputFileName, "wb+");
 
         readCSV(csvInput, binOutput);
 

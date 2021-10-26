@@ -584,9 +584,12 @@ void printBin(FILE* inFile) {
 /*Funcao para atualizar o Numero de Estacoes e Numero de Pares de Estacoes no cabecalio*/
 //Obs mudar o nome da funcao
 
-void atualizaNroEstacoes (FILE* outFile){
-    int nEst = 0, nPares = 0, repetido;             
+void atualizaNrCabecalho(FILE* outFile){
+    int nEst = 0, nPares = 0, repetido;           
     int codEst[1024], codProx[1024], i, k=0, l=0;
+    FileHeader header;
+
+    header = readHeader(outFile);
 
     //Struct para auxiliar na contagem de pares de estacoes: Armazena os valores codEst e codProx de cada registro
     struct listaLinhas
@@ -733,11 +736,10 @@ void atualizaNroEstacoes (FILE* outFile){
             auxLin = &listaLin;
 
         }
-        
-
     }
-
-    printf("N° estações: %d , N° pares: %d", nEst, nPares);
+    header.nroEstacoes = nEst;
+    header.nroParesEstacao = nPares;
+    writeHeader(outFile, header);
 
 }
 
@@ -766,6 +768,7 @@ void readCSV(FILE* inFile, FILE* outFile) {
         writeRegister(outFile, reg);
     }
 
+    atualizaNrCabecalho(outFile);
     setConsistency('1', outFile);
 
     return; 
