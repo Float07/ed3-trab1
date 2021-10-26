@@ -743,7 +743,11 @@ void updateRegisterByOffset(FILE* outFile, long offset, char* fields, int* intVa
 
     if(updatedReg.tamanhoRegistro > reg.tamanhoRegistro){
         //Remove e insere o registro
-        //PRECISA DA FUNCIONALIDADE DE INSERÇÃO
+        FileHeader fileHeader = readHeader(outFile);
+        deleteRegisterByOffset(outFile, offset, fileHeader.topoLista);
+        fileHeader.topoLista = offset;
+        writeHeader(outFile, fileHeader);
+        insertRegister(outFile, updatedReg);
     }else{
         //Insere no mesmo lugar
         int garbageAmount = reg.tamanhoRegistro - updatedReg.tamanhoRegistro;
