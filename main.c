@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "header.h"
 
@@ -150,6 +151,12 @@ void funcionalidade4() {
     return;
 }
 
+void funcionalidade5() {
+    //Register reg;
+
+    //Ainda a fazer
+}
+
 void funcionalidade6() {
      //Veja a documentação de getSearchCriteria para melhor entender o significado de fields, intValues e strValues
     int qtdUpdates;
@@ -232,6 +239,9 @@ int main(int argc, char *argv[]) {
     case 4:
         funcionalidade4();
         break;
+    
+    case 5:
+        funcionalidade5();
 
     case 6:
         funcionalidade6();

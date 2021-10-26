@@ -9,43 +9,6 @@
 //Quantidade de bytes do header no arquivo binário
 #define BIN_HEADER_SIZE 17 
 
-//Usado para representar um registro.
-struct Register{
-    //Campos de tamanho fixo para gerenciamento
-    char removido;      //1 byte
-    int tamanhoRegistro;        //4 bytes
-    long proxLista;     //8 bytes
-    //Campos de tamanho fixo
-    int codEstacao;     //4 bytes
-    int codLinha;       //4 bytes
-    int codProxEstacao; //4 bytes
-    int distProxEstacao;//4 bytes
-    int codLinhaIntegra;//4 bytes
-    int codEstIntegra;  //4 bytes
-    //Tamanho total dos campos fixos = 37 - 5 (removido e tamanhoRegistro não contam)
-
-    //Campos de tamanho variável
-    char nomeEstacao[MAX_NAME_LENGTH];
-    char nomeLinha[MAX_NAME_LENGTH];
-};
-typedef struct Register Register;
-
-//Tipo de dado que salva os campos de um registro como strings.
-//Esse tipo é convertido para o tipo Register.
-struct RegisterStr{
-    //Campos de tamanho fixo
-    char codEstacao[32];
-    char codLinha[32];
-    char codProxEstacao[32];
-    char distProxEstacao[32];
-    char codLinhaIntegra[32];
-    char codEstIntegra[32];
-    //Campos de tamanho variável
-    char nomeEstacao[MAX_NAME_LENGTH];
-    char nomeLinha[MAX_NAME_LENGTH];
-};
-typedef struct RegisterStr RegisterStr;
-
 //Tipo para representar o cabeçalho do arquivo binário
 struct FileHeader{
     char status;
@@ -79,52 +42,6 @@ void printRegisterStr(RegisterStr reg) {
 * FUNÇÕES INTERNAS
 * Utilizadas somente em "registers.c"
 */
-
-//Transforma dado do tipo RegisterStr no tipo Register
-Register registerStrToRegister(RegisterStr registerStr) {
-    Register reg;
-
-    reg.removido = '0';
-    reg.tamanhoRegistro = 32 + 2; //Tamanho inicial mais o tamanho dos dois pipes, desconsiderando os campos de tamanho variável
-    reg.proxLista = -1;
-
-
-    //Transforma strings de registerStr em inteiros para reg
-    //Caso os valores que podem ser nulos sejam strings vazias, o inteiro salvo é -1
-    reg.codEstacao = atoi(registerStr.codEstacao);
-
-    if(strlen(registerStr.codLinha))
-        reg.codLinha = atoi(registerStr.codLinha);
-    else
-        reg.codLinha = -1;
-
-    if(strlen(registerStr.codProxEstacao))
-        reg.codProxEstacao = atoi(registerStr.codProxEstacao);
-    else
-        reg.codProxEstacao = -1;
-
-    if(strlen(registerStr.distProxEstacao))
-        reg.distProxEstacao = atoi(registerStr.distProxEstacao);
-    else
-        reg.distProxEstacao = -1;
-
-    if(strlen(registerStr.codLinhaIntegra))
-        reg.codLinhaIntegra = atoi(registerStr.codLinhaIntegra);
-    else
-        reg.codLinhaIntegra = -1;
-
-    if(strlen(registerStr.codEstIntegra))
-        reg.codEstIntegra = atoi(registerStr.codEstIntegra);
-    else
-        reg.codEstIntegra = -1;
-
-    //Copia strings dos campos de tamanho variável e soma no tamanho do registro
-    strcpy(reg.nomeEstacao, registerStr.nomeEstacao);
-    strcpy(reg.nomeLinha, registerStr.nomeLinha);
-    reg.tamanhoRegistro += strlen(reg.nomeLinha) + strlen(reg.nomeEstacao);
-
-    return reg;
-}
 
 //Transforma uma linha do .csv para um tipo Register
 Register stringToRegister(char* registerStr) {
@@ -310,14 +227,17 @@ Register readRegister(FILE* inFile) {
         reg.tamanhoRegistro = 0;
         return reg;
     }
-    fread(&(reg.tamanhoRegistro), sizeof(int), 1, inFile);  
+
+    fread(&(reg.tamanhoRegistro), sizeof(int), 1, inFile);
+
+    fread(&(reg.proxLista), sizeof(long), 1, inFile);  
     if (reg.removido == '1') {
         //Se o registro foi removido, posiciona o cursor no final do registro removido e o retorna
-       fseek(inFile, reg.tamanhoRegistro, SEEK_CUR);
+       fseek(inFile, reg.tamanhoRegistro - sizeof(long), SEEK_CUR);
        return reg; 
     }
 
-    fread(&(reg.proxLista), sizeof(long), 1, inFile);
+
     fread(&(reg.codEstacao), sizeof(int), 1, inFile);
     fread(&(reg.codLinha), sizeof(int), 1, inFile);
     fread(&(reg.codProxEstacao), sizeof(int), 1, inFile);
@@ -835,6 +755,104 @@ void updateRegisterByOffset(FILE* outFile, long offset, char* fields, int* intVa
             fwrite("$", sizeof(char), 1, outFile);
         }
     }
+
+    return;
+}
+
+//Transforma dado do tipo RegisterStr no tipo Register
+Register registerStrToRegister(RegisterStr registerStr) {
+    Register reg;
+
+    reg.removido = '0';
+    reg.tamanhoRegistro = 32 + 2; //Tamanho inicial mais o tamanho dos dois pipes, desconsiderando os campos de tamanho variável
+    reg.proxLista = -1;
+
+
+    //Transforma strings de registerStr em inteiros para reg
+    //Caso os valores que podem ser nulos sejam strings vazias, o inteiro salvo é -1
+    reg.codEstacao = atoi(registerStr.codEstacao);
+
+    if(strlen(registerStr.codLinha))
+        reg.codLinha = atoi(registerStr.codLinha);
+    else
+        reg.codLinha = -1;
+
+    if(strlen(registerStr.codProxEstacao))
+        reg.codProxEstacao = atoi(registerStr.codProxEstacao);
+    else
+        reg.codProxEstacao = -1;
+
+    if(strlen(registerStr.distProxEstacao))
+        reg.distProxEstacao = atoi(registerStr.distProxEstacao);
+    else
+        reg.distProxEstacao = -1;
+
+    if(strlen(registerStr.codLinhaIntegra))
+        reg.codLinhaIntegra = atoi(registerStr.codLinhaIntegra);
+    else
+        reg.codLinhaIntegra = -1;
+
+    if(strlen(registerStr.codEstIntegra))
+        reg.codEstIntegra = atoi(registerStr.codEstIntegra);
+    else
+        reg.codEstIntegra = -1;
+
+    //Copia strings dos campos de tamanho variável e soma no tamanho do registro
+    strcpy(reg.nomeEstacao, registerStr.nomeEstacao);
+    strcpy(reg.nomeLinha, registerStr.nomeLinha);
+    reg.tamanhoRegistro += strlen(reg.nomeLinha) + strlen(reg.nomeEstacao);
+
+    return reg;
+}
+
+//Insere um registro no arquivo binário
+//Parâmetros:
+//*outFile -> Arquivo no qual o registro será inserido
+//*reg -> Registro que será adicionado
+//  outFile deve estar aberto no modo "rb+"
+void insertRegister(FILE* outFile, Register reg) {
+    FileHeader fileHeader = readHeader(outFile);
+
+    long prevOffset = 0;
+    long offset = fileHeader.topoLista;
+
+    while (offset != -1)
+    {
+        fseek(outFile, offset, SEEK_SET);
+        Register removedReg = readRegister(outFile);
+        int sizeDiff = removedReg.tamanhoRegistro - reg.tamanhoRegistro;
+
+        //Se o tamanho do registro removido for maior, é escrito por cima dele
+        //Senão, lê o próximo registro removido
+        if(sizeDiff >= 0) {
+            writeRegister(outFile, reg);
+
+            //Preenche o restante com lixo ('$')
+            for (int i = 0; i < sizeDiff; i++)
+                fwrite("w", sizeof(char), 1, outFile);
+
+            //Atualiza a lista encadeada de registros removidos
+            offset = removedReg.proxLista;
+            if(prevOffset) {
+                fseek(outFile, prevOffset+5, SEEK_SET);
+                fwrite(&offset, sizeof(long), 1, outFile);
+            }else {//Se prevOffset = 0, atualiza o cabeçalho
+                fileHeader.topoLista = offset;
+            }
+
+            writeHeader(outFile, fileHeader);
+
+            return;
+        }
+
+        prevOffset = offset;
+        offset = removedReg.proxLista;
+    }
+    
+    //Salva no final do arquivo pois não foi encontrado nenhum espaço livre
+    fseek(outFile, 0, SEEK_END);
+
+    writeRegister(outFile, reg);
 
     return;
 }
