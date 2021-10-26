@@ -582,11 +582,13 @@ void printBin(FILE* inFile) {
 }
 
 /*Funcao para atualizar o Numero de Estacoes e Numero de Pares de Estacoes no cabecalio*/
+//Obs mudar o nome da funcao
 
 void atualizaNroEstacoes (FILE* outFile){
-    int nEst = 0, nPares = 0, repetido;
+    int nEst = 0, nPares = 0, repetido;             
     int codEst[1024], codProx[1024], i, k=0, l=0;
 
+    //Struct para auxiliar na contagem de pares de estacoes: Armazena os valores codEst e codProx de cada registro
     struct listaLinhas
     {
         int codEst;
@@ -602,7 +604,7 @@ void atualizaNroEstacoes (FILE* outFile){
     listaLin.codProx = -1;
     listaLin.prox = NULL;
     
-
+    //Struct para auxiliar na contagem de estacoes com nome diferentes: Armazena os nomes das estacoes
     struct listaEstacoes
     {
         char estacao[MAX_NAME_LENGTH];
@@ -618,7 +620,9 @@ void atualizaNroEstacoes (FILE* outFile){
 
     Register reg;
 
-    if((reg = readRegister(outFile)).tamanhoRegistro > 0){
+
+    if((reg = readRegister(outFile)).tamanhoRegistro > 0){          //Verifica se possui registro no arquivo
+
         do{
             if(reg.removido==0){
                 strcpy(lista.estacao, reg.nomeEstacao);
@@ -633,6 +637,7 @@ void atualizaNroEstacoes (FILE* outFile){
             }
         }while ((reg = readRegister(outFile)).tamanhoRegistro > 0);
         
+        //Percorre o arquivo até o final, contando o numero de estacoes e pares de estacoes
         while ((reg = readRegister(outFile)).tamanhoRegistro > 0){
             if(reg.removido==0){
                 percorre = &lista;
@@ -672,7 +677,7 @@ void atualizaNroEstacoes (FILE* outFile){
         percorreLin = &listaLin;
         auxLin = &listaLin;
 
-        /*Conta o número de pares*/
+        //Conta o número de pares de estacoes
         while (percorreLin!=NULL)
         {
             if(k==0){
@@ -731,6 +736,8 @@ void atualizaNroEstacoes (FILE* outFile){
         
 
     }
+
+    printf("N° estações: %d , N° pares: %d", nEst, nPares);
 
 }
 
