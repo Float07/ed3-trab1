@@ -505,7 +505,7 @@ void printBin(FILE* inFile) {
 //Obs mudar o nome da funcao
 
 void atualizaNrCabecalho(FILE* outFile){
-    int nEst = 0, nPares = 0, repetido;           
+    int nEst = 0, nPares = 0, repetido, nListaLin = 0;           
     int codEst[1024], codProx[1024], i, k=0, l=0;
     FileHeader header;
 
@@ -547,12 +547,13 @@ void atualizaNrCabecalho(FILE* outFile){
     if((reg = readRegister(outFile)).tamanhoRegistro > 0){          //Verifica se possui registro no arquivo
 
         do{
-            if(reg.removido==0){
+            if(reg.removido=='0'){
                 strcpy(lista.estacao, reg.nomeEstacao);
                 nEst++;
 
                 listaLin.codEst = reg.codEstacao;
                 listaLin.codProx = reg.codProxEstacao;
+                nListaLin++;
 
                 percorreLin = &listaLin;
 
@@ -562,7 +563,7 @@ void atualizaNrCabecalho(FILE* outFile){
         
         //Percorre o arquivo até o final, contando o numero de estacoes e pares de estacoes
         while ((reg = readRegister(outFile)).tamanhoRegistro > 0){
-            if(reg.removido==0){
+            if(reg.removido=='0'){
                 percorre = &lista;
                 repetido=0;
                 while (percorre!=NULL)
@@ -590,6 +591,7 @@ void atualizaNrCabecalho(FILE* outFile){
                 auxLin->codEst = reg.codEstacao;
                 auxLin->codProx = reg.codProxEstacao;
                 auxLin->prox = NULL;
+                nListaLin++;
 
                 percorreLin->prox = auxLin;
                 percorreLin = percorreLin->prox;
@@ -606,6 +608,7 @@ void atualizaNrCabecalho(FILE* outFile){
             if(k==0){
                 codEst[k] = percorreLin->codEst;
                 k++;
+                percorreLin = percorreLin->prox;
             }else{
                 repetido=0;
                 for(i=0; i<k; i++){
@@ -617,6 +620,7 @@ void atualizaNrCabecalho(FILE* outFile){
                 if(repetido==0){
                     codEst[k] = percorreLin->codEst;
                     k++;
+                    percorreLin = percorreLin->prox;
                 }else{
                     percorreLin = percorreLin->prox;
                     continue;
@@ -628,14 +632,17 @@ void atualizaNrCabecalho(FILE* outFile){
             {
                 if(auxLin->codEst==codEst[(k-1)]){
                     if(l==0){
-                        codProx[l] = auxLin->codProx;
-                         l++;
-                         nPares++;
+                        if(auxLin->codProx>=0){
+                            codProx[l] = auxLin->codProx;
+                            l++;
+                            nPares++;
+                        }
+                        auxLin = auxLin->prox;
                     }else{
                         repetido=0;
                         for(i=0; i<l; i++){
-                            if(codProx[i] == auxLin->codProx){
-                            repetido = 1;
+                            if(codProx[i] == auxLin->codProx || auxLin->codProx<0){
+                                repetido = 1;
                             break;
                             }
                         }
@@ -643,6 +650,7 @@ void atualizaNrCabecalho(FILE* outFile){
                             codProx[l] = auxLin->codProx;
                             l++;
                             nPares++;
+                            auxLin = auxLin->prox;
                         }else{
                             auxLin = auxLin->prox;
                             continue;
