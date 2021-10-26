@@ -581,9 +581,27 @@ void printBin(FILE* inFile) {
     }
 }
 
+/*Funcao para atualizar o Numero de Estacoes e Numero de Pares de Estacoes no cabecalio*/
 
 void atualizaNroEstacoes (FILE* outFile){
-    int nEst = 0, repetido;
+    int nEst = 0, nPares = 0, repetido;
+    int codEst[1024], codProx[1024], i, k=0, l=0;
+
+    struct listaLinhas
+    {
+        int codEst;
+        int codProx;
+        struct listaLinhas *prox;
+    };
+
+    typedef struct listaLinhas listaLinhas;
+
+    listaLinhas listaLin, *percorreLin, *auxLin;
+
+    listaLin.codEst = -1;
+    listaLin.codProx = -1;
+    listaLin.prox = NULL;
+    
 
     struct listaEstacoes
     {
@@ -605,6 +623,12 @@ void atualizaNroEstacoes (FILE* outFile){
             if(reg.removido==0){
                 strcpy(lista.estacao, reg.nomeEstacao);
                 nEst++;
+
+                listaLin.codEst = reg.codEstacao;
+                listaLin.codProx = reg.codProxEstacao;
+
+                percorreLin = &listaLin;
+
                 break;
             }
         }while ((reg = readRegister(outFile)).tamanhoRegistro > 0);
@@ -633,11 +657,79 @@ void atualizaNroEstacoes (FILE* outFile){
                     }
                     percorre->prox=aux;
                     nEst++;
-                }
+                } 
+                auxLin = (listaLinhas*) malloc(sizeof(listaLin));
+                auxLin->codEst = reg.codEstacao;
+                auxLin->codProx = reg.codProxEstacao;
+                auxLin->prox = NULL;
 
+                percorreLin->prox = auxLin;
+                percorreLin = percorreLin->prox;
+
+            }     
+        }
+
+        percorreLin = &listaLin;
+        auxLin = &listaLin;
+
+        /*Conta o número de pares*/
+        while (percorreLin!=NULL)
+        {
+            if(k==0){
+                codEst[k] = percorreLin->codEst;
+                k++;
+            }else{
+                repetido=0;
+                for(i=0; i<k; i++){
+                    if(codEst[i] == percorreLin->codEst){
+                        repetido = 1;
+                        break;
+                    }
+                }
+                if(repetido==0){
+                    codEst[k] = percorreLin->codEst;
+                    k++;
+                }else{
+                    percorreLin = percorreLin->prox;
+                    continue;
+                }
             }
 
+            l = 0; 
+            while (auxLin!=NULL)
+            {
+                if(auxLin->codEst==codEst[(k-1)]){
+                    if(l==0){
+                        codProx[l] = auxLin->codProx;
+                         l++;
+                         nPares++;
+                    }else{
+                        repetido=0;
+                        for(i=0; i<l; i++){
+                            if(codProx[i] == auxLin->codProx){
+                            repetido = 1;
+                            break;
+                            }
+                        }
+                        if(repetido==0){
+                            codProx[l] = auxLin->codProx;
+                            l++;
+                            nPares++;
+                        }else{
+                            auxLin = auxLin->prox;
+                            continue;
+                         }
+                    }   
+
+                }else{
+                    auxLin=auxLin->prox;
+                }
+            }
+            auxLin = &listaLin;
+
         }
+        
+
     }
 
 }
