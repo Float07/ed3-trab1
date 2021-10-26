@@ -153,8 +153,55 @@ void funcionalidade4() {
 
 void funcionalidade5() {
     //Register reg;
+    char fileName[FILENAME_MAX];
+    scanf("%s", fileName);
+    FILE* outFile = fopen(fileName, "rb+");
+    
+    int qtdeInsercoes;
+    scanf("%d", &qtdeInsercoes);
 
-    //Ainda a fazer
+    for (int i = 0; i < qtdeInsercoes; i++)
+    {
+        RegisterStr regStr;
+
+        scanf("%s", regStr.codEstacao);
+        if(!strcmp(regStr.codEstacao, "NULO"))
+            strcpy(regStr.codEstacao, "");
+
+        scan_quote_string(regStr.nomeEstacao);
+
+        scanf("%s", regStr.codLinha);
+        if(!strcmp(regStr.codLinha, "NULO"))
+            strcpy(regStr.codLinha, "");
+        
+        scan_quote_string(regStr.nomeLinha);
+
+        scanf("%s", regStr.codProxEstacao);
+        if(!strcmp(regStr.codProxEstacao, "NULO"))
+            strcpy(regStr.codProxEstacao, "");
+
+        scanf("%s", regStr.distProxEstacao);
+        if(!strcmp(regStr.distProxEstacao, "NULO"))
+            strcpy(regStr.distProxEstacao, "");
+
+        scanf("%s", regStr.codLinhaIntegra);
+        if(!strcmp(regStr.codLinhaIntegra, "NULO"))
+            strcpy(regStr.codLinhaIntegra, "");
+        
+        scanf("%s", regStr.codEstIntegra);
+        if(!strcmp(regStr.codEstIntegra, "NULO"))
+            strcpy(regStr.codEstIntegra, "");
+        
+        Register reg = registerStrToRegister(regStr);
+        
+        insertRegister(outFile, reg);
+    }
+    
+    fclose(outFile);
+
+    binarioNaTela(fileName);
+    
+    return;
 }
 
 void funcionalidade6() {
