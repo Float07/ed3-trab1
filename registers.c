@@ -582,16 +582,11 @@ void printBin(FILE* inFile) {
 }
 
 
-/*Funcao para contar o numero de estacoes diferente*/
+void atualizaNroEstacoes (FILE* outFile){
+    int nEst = 0, repetido;
 
-int atualizaNroEstacoes (FILE* outFile){
-    int i, nEst = 0, tamanho;
-    char removido, letra;
-
-    /*Cria-se uma lista para guardar o nome das estacoes para verificacao posterior*/
     struct listaEstacoes
     {
-        int cabeca;
         char estacao[MAX_NAME_LENGTH];
         struct listaEstacoes *prox;
         
@@ -599,60 +594,51 @@ int atualizaNroEstacoes (FILE* outFile){
     typedef struct listaEstacoes listaEstacoes;
 
     listaEstacoes lista, *percorre, *aux;
-    listaEstacoes *compara;
 
-    aux = NULL;
-    percorre = NULL;
-
-    lista.cabeca = 1;
     lista.estacao[0]=0;
     lista.prox = NULL;
 
+    Register reg;
 
-    fseek(outFile, 17, SEEK_SET); //Pula o cabecalio
-    
-    /*Coloca-se os nomes na lista*/
-    while (fread(&removido, sizeof(char), 1, outFile)==1)
-    {
-
-        if(removido==1){                 //Verifica se o registro foi removido
-            fread(&tamanho, sizeof(int), 1, outFile);
-            fseek(outFile, (tamanho-5), SEEK_CUR);
-            continue;
-        }
-
-        fseek(outFile, 36, SEEK_SET);       //Pula para o campo com o nome da estacao
-
-        aux = (listaEstacoes*)malloc(sizeof(listaEstacoes));
-        aux->cabeca = 0;
-        aux->prox = NULL;
-        aux->estacao[0] = 0;
+    if((reg = readRegister(outFile)).tamanhoRegistro > 0){
+        do{
+            if(reg.removido==0){
+                strcpy(lista.estacao, reg.nomeEstacao);
+                nEst++;
+                break;
+            }
+        }while ((reg = readRegister(outFile)).tamanhoRegistro > 0);
         
-        if(lista.prox==NULL){
-            percorre = &lista;
-        }
+        while ((reg = readRegister(outFile)).tamanhoRegistro > 0){
+            if(reg.removido==0){
+                percorre = &lista;
+                repetido=0;
+                while (percorre!=NULL)
+                {
+                   if(strcmp(reg.nomeEstacao, percorre->estacao)==0){
+                       repetido=1;
+                       break;
+                   }
+                   percorre=percorre->prox;
+                }
 
-        /*Comeca a le a o nome da estacao e salva em estacao*/
-        i = 0;
-        fread(&letra, sizeof(char), 1, outFile);
-        while (letra=!'|')
-        {
-            aux->estacao[i] = letra;
-            i++;
-            fread(&letra, sizeof(char), 1, outFile);
-        }
+                if(repetido==0){
+                    aux = (listaEstacoes*)malloc(sizeof(listaEstacoes));
+                    aux->prox = NULL;
+                    strcpy(aux->estacao, reg.nomeEstacao);
+                    percorre = &lista;
+                    while (percorre->prox!=NULL)
+                    {
+                        percorre=percorre->prox;
+                    }
+                    percorre->prox=aux;
+                    nEst++;
+                }
 
-        fread(&letra, sizeof(char), 1, outFile);
-        while (letra=!'|')
-        {
-            fread(&letra, sizeof(char), 1, outFile);
+            }
+
         }
-        percorre->prox = aux;
-        percorre = aux;
     }
-
-    /*Conta-se a quantidade de número diferentes*/
-
 
 }
 
