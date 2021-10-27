@@ -495,15 +495,21 @@ void printMatchingBin(FILE* inFile, char* fields, int* intValues, char** strValu
 }
 
 //Lê o binário e imprime as informações de todos os registros não removidos
-void printBin(FILE* inFile) {
+int printBin(FILE* inFile) {
+    int existeReg=0;
     //Avança para o primeiro byte após o header
     readHeader(inFile);
 
     Register reg;
     while ((reg = readRegister(inFile)).tamanhoRegistro > 0) {
-        printRegister(reg);
-        printf("\n");
+        if(reg.removido=='0'){
+            existeReg = 1;
+            printRegister(reg);
+            printf("\n");
+        }
+      
     }
+    return existeReg;
 }
 
 /*Funcao para atualizar o Numero de Estacoes e Numero de Pares de Estacoes no cabecalio*/

@@ -30,10 +30,14 @@ void funcionalidade1() {
 
 void funcionalidade2() {
         char inputFileName[MAX_FILENAME_SIZE];
+        int imprimiu=0;
         scanf("%s", inputFileName);
 
         FILE* inFile = fopen(inputFileName, "rb");
-        printBin(inFile);
+        imprimiu = printBin(inFile);
+        if(imprimiu==0){
+            printf("Registro inexistente.");
+        }
         fclose(inFile);
 
         return;
