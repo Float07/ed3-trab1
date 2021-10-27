@@ -111,6 +111,12 @@ void funcionalidade3() {
     getSearchCriteria(qtdCampos, fields, intValues, strValues);
 
     FILE* inFile = fopen(fileName, "rb");
+    if (inFile == NULL)
+    {
+        printf("Falha no processamento do arquivo.");
+        return;
+    }
+    
     printMatchingBin(inFile, fields, intValues, strValues);
     fclose(inFile);
 

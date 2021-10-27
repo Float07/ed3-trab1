@@ -479,13 +479,18 @@ Register updateRegister(Register reg, char* fields, int* intValues, char** strVa
 //Veja a documentação de "getNextMatchingRegister" para descrição dos outros parâmetros
 void printMatchingBin(FILE* inFile, char* fields, int* intValues, char** strValues) {
     readHeader(inFile);
+    int registerFound = 0;
 
     Register reg;
     while ((reg = getNextMatchingRegister(inFile, fields, intValues, strValues)).tamanhoRegistro){
+        registerFound = 1;
         printRegister(reg);
         printf("\n");
     }
     
+    if(!registerFound)
+        printf("Registro inexistente.");
+
     return;
 }
 
