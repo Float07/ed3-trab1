@@ -852,7 +852,7 @@ void insertRegister(FILE* outFile, Register reg) {
 
             //Preenche o restante com lixo ('$')
             for (int i = 0; i < sizeDiff; i++)
-                fwrite("w", sizeof(char), 1, outFile);
+                fwrite("$", sizeof(char), 1, outFile);
 
             //Atualiza a lista encadeada de registros removidos
             offset = removedReg.proxLista;
@@ -876,6 +876,8 @@ void insertRegister(FILE* outFile, Register reg) {
     fseek(outFile, 0, SEEK_END);
 
     writeRegister(outFile, reg);
+
+    atualizaNrCabecalho(outFile);
 
     return;
 }
