@@ -133,6 +133,12 @@ void funcionalidade4() {
     char fileName[MAX_FILENAME_SIZE];
 
     scanf("%s", fileName);
+    FILE* outFile = fopen(fileName, "rb+");
+    if(!outFile) {
+        printf("Falha no processamento do arquivo.");
+        return;
+    }
+
     scanf("%d", &qtdRemocoes);
 
     for (int i = 0; i < qtdRemocoes; i++)
@@ -152,16 +158,12 @@ void funcionalidade4() {
 
         getSearchCriteria(qtdCampos, fields, intValues, strValues);
         
-        FILE* outFile = fopen(fileName, "rb+");
 
-        if(!outFile) {
-            printf("Falha no processamento do arquivo.");
-            return;
-        }
-
+        fseek(outFile, 0, SEEK_SET);
         deleteMatchingBin(outFile, fields, intValues, strValues);
-        fclose(outFile);
     }
+
+    fclose(outFile);
 
     binarioNaTela(fileName);
     
@@ -173,6 +175,11 @@ void funcionalidade5() {
     char fileName[FILENAME_MAX];
     scanf("%s", fileName);
     FILE* outFile = fopen(fileName, "rb+");
+
+    if(!outFile) {
+        printf("Falha no processamento do arquivo.");
+        return;
+    }
     
     int qtdeInsercoes;
     scanf("%d", &qtdeInsercoes);
