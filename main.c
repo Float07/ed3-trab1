@@ -226,29 +226,39 @@ void funcionalidade6() {
     int qtdUpdates;
     char fileName[MAX_FILENAME_SIZE];
 
-    char fields[] = {0, 0, 0, 0, 0, 0, 0, 0};
-    char fieldsUpdate[] = {0, 0, 0, 0, 0, 0, 0, 0};
-    
-    int intValues[] = {0, 0, 0, 0, 0, 0};
-    int intValuesUpdate[] = {0, 0, 0, 0, 0, 0}; 
-
-    char str1[MAX_NAME_LENGTH];
-    char str2[MAX_NAME_LENGTH];
-    char* strValues[2];
-    strValues[0] = str1;
-    strValues[1] = str2;
-    char str1Update[MAX_NAME_LENGTH];
-    char str2Update[MAX_NAME_LENGTH];
-    char* strValuesUpdate[2];
-    strValues[0] = str1Update;
-    strValues[1] = str2Update;
-
     scanf("%s", fileName);
+    FILE* outFile = fopen(fileName, "rb+");
+
+    if(!outFile) {
+        printf("Falha no processamento do arquivo.");
+        return;
+    }
+
     scanf("%d", &qtdUpdates);
 
     //Realiza a quantidade requisitada de atualizações
     for (int i = 0; i < qtdUpdates; i++)
     {
+        char fields[] = {0, 0, 0, 0, 0, 0, 0, 0};
+        int intValues[] = {0, 0, 0, 0, 0, 0};
+
+        char str1[MAX_NAME_LENGTH];
+        char str2[MAX_NAME_LENGTH];
+        char* strValues[2];
+        strValues[0] = str1;
+        strValues[1] = str2;
+
+        char fieldsUpdate[] = {0, 0, 0, 0, 0, 0, 0, 0};
+        int intValuesUpdate[] = {0, 0, 0, 0, 0, 0}; 
+
+        
+        char str1Update[MAX_NAME_LENGTH];
+        char str2Update[MAX_NAME_LENGTH];
+        char* strValuesUpdate[2];
+        strValuesUpdate[0] = str1Update;
+        strValuesUpdate[1] = str2Update;
+                
+
         //Coleta os critérios de busca
         int qtdeParametrosBusca;
         scanf("%d", &qtdeParametrosBusca);
@@ -260,7 +270,7 @@ void funcionalidade6() {
         getSearchCriteria(qtdeParametrosUpdate, fieldsUpdate, intValuesUpdate, strValuesUpdate);
 
         //Recebe os offsets dos registros a serem atualizados
-        FILE* outFile = fopen(fileName, "rb+");
+        fseek(outFile, 0, SEEK_SET);
         long* offsets = getAllMatchingRegistersOffset(outFile, fields, intValues, strValues);
 
         //Atualiza os registros nos offsets recebidos com as informações desejadas
@@ -268,11 +278,13 @@ void funcionalidade6() {
         {
             updateRegisterByOffset(outFile, offsets[j+1], fieldsUpdate, intValuesUpdate, strValuesUpdate);
         }
-        
 
-        fclose(outFile);
     }
+
+    fclose(outFile);
     
+    binarioNaTela(fileName);
+
     return;
 }
 
@@ -306,6 +318,7 @@ int main(int argc, char *argv[]) {
     
     case 5:
         funcionalidade5();
+        break;
 
     case 6:
         funcionalidade6();

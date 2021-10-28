@@ -779,6 +779,8 @@ void updateRegisterByOffset(FILE* outFile, long offset, char* fields, int* intVa
         }
     }
 
+    atualizaNrCabecalho(outFile);
+
     return;
 }
 
