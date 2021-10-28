@@ -153,6 +153,12 @@ void funcionalidade4() {
         getSearchCriteria(qtdCampos, fields, intValues, strValues);
         
         FILE* outFile = fopen(fileName, "rb+");
+
+        if(!outFile) {
+            printf("Falha no processamento do arquivo.");
+            return;
+        }
+
         deleteMatchingBin(outFile, fields, intValues, strValues);
         fclose(outFile);
     }
