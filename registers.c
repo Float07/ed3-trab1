@@ -867,6 +867,8 @@ void insertRegister(FILE* outFile, Register reg) {
 
             writeHeader(outFile, fileHeader);
 
+            atualizaNrCabecalho(outFile);
+
             return;
         }
 
