@@ -131,21 +131,22 @@ void funcionalidade4() {
     //Veja a documentação de getSearchCriteria para melhor entender o significado de fields, intValues e strValues
     int qtdRemocoes;
     char fileName[MAX_FILENAME_SIZE];
-    char fields[] = {0, 0, 0, 0, 0, 0, 0, 0};
-    
-    int intValues[] = {0, 0, 0, 0, 0, 0}; 
-
-    char str1[MAX_NAME_LENGTH];
-    char str2[MAX_NAME_LENGTH];
-    char* strValues[2];
-    strValues[0] = str1;
-    strValues[1] = str2;
 
     scanf("%s", fileName);
     scanf("%d", &qtdRemocoes);
 
     for (int i = 0; i < qtdRemocoes; i++)
     {
+        char fields[] = {0, 0, 0, 0, 0, 0, 0, 0};
+        
+        int intValues[] = {0, 0, 0, 0, 0, 0}; 
+
+        char str1[MAX_NAME_LENGTH];
+        char str2[MAX_NAME_LENGTH];
+        char* strValues[2];
+        strValues[0] = str1;
+        strValues[1] = str2;
+        
         int qtdCampos;
         scanf("%d", &qtdCampos);
 

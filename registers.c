@@ -419,8 +419,8 @@ void deleteRegisterByOffset(FILE* outFile, long offset, long listHead) {
 //  O arquivo deve estar aberto no modo "rb+"
 //*offsets -> Vetor de offsets de registros. O primeiro elemento indica a quantidade de offsets presentes
 void deleteRegistersByOffset(FILE* outFile, long* offsets) {
-    FileHeader FileHeader = readHeader(outFile);
-    long topoList = FileHeader.topoLista;
+    FileHeader fileHeader = readHeader(outFile);
+    long topoList = fileHeader.topoLista;
 
     int offsetsAmount = (int)offsets[0];
     for (size_t i = 0; i < offsetsAmount; i++)
@@ -429,8 +429,8 @@ void deleteRegistersByOffset(FILE* outFile, long* offsets) {
         topoList = offsets[i+1];
     }
 
-    FileHeader.topoLista = topoList;
-    writeHeader(outFile, FileHeader);
+    fileHeader.topoLista = topoList;
+    writeHeader(outFile, fileHeader);
     
     return;
 }
@@ -720,13 +720,12 @@ void readCSV(FILE* inFile, FILE* outFile) {
 void deleteMatchingBin(FILE* outFile, char* fields, int* intValues, char** strValues) {
     long* offsets = getAllMatchingRegistersOffset(outFile, fields, intValues, strValues);
     
-    for (int i = 0; i < offsets[0]; i++)
-    {
-        deleteRegistersByOffset(outFile, offsets);
-    }
+    deleteRegistersByOffset(outFile, offsets);
     
-
     free(offsets);
+
+    atualizaNrCabecalho(outFile);
+
     return;
 }
 
@@ -737,6 +736,7 @@ void deleteMatchingBin(FILE* outFile, char* fields, int* intValues, char** strVa
 long* getAllMatchingRegistersOffset(FILE* inFile, char* fields, int* intValues, char** strValues) {
     long* offsets;
     offsets = (long*)malloc(sizeof(long) * 1);
+    offsets[0] = 0;
 
     long offset = BIN_HEADER_SIZE;//Offset inicializa para o primeiro byte após o header
     int regSize;//Receberá o tamanho do registro recuperado por referência
