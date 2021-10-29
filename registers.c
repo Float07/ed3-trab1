@@ -770,6 +770,7 @@ void updateRegisterByOffset(FILE* outFile, long offset, char* fields, int* intVa
     }else{
         //Insere no mesmo lugar
         int garbageAmount = reg.tamanhoRegistro - updatedReg.tamanhoRegistro;
+        updatedReg.tamanhoRegistro = reg.tamanhoRegistro;
         fseek(outFile, offset, SEEK_SET);
         writeRegister(outFile, updatedReg);
         //Preenche o restante com $ para indicar lixo
