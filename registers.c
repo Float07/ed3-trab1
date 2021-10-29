@@ -169,13 +169,6 @@ int writeHeader(FILE* outFile, FileHeader fileHeader) {
     return 0;
 }
 
-//Muda o status do arquivo binário para consistente ou inconsistente
-void setConsistency(char consistency, FILE* outFile) {
-    fseek(outFile, 0, SEEK_SET);
-    fwrite(&consistency, sizeof(char), 1, outFile);
-    return;
-}
-
 //Escreve um registro no arquivo binário
 int writeRegister(FILE* outFile, Register reg) {
     //Escreve campos de tamanho fixo
@@ -886,5 +879,12 @@ void insertRegister(FILE* outFile, Register reg) {
 
     atualizaNrCabecalho(outFile);
 
+    return;
+}
+
+//Muda o status do arquivo binário para consistente ou inconsistente
+void setConsistency(char consistency, FILE* outFile) {
+    fseek(outFile, 0, SEEK_SET);
+    fwrite(&consistency, sizeof(char), 1, outFile);
     return;
 }

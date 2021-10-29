@@ -138,6 +138,8 @@ void funcionalidade4() {
         printf("Falha no processamento do arquivo.");
         return;
     }
+    setConsistency('0', outFile);
+    fseek(outFile, 0, SEEK_SET);
 
     scanf("%d", &qtdRemocoes);
 
@@ -163,6 +165,7 @@ void funcionalidade4() {
         deleteMatchingBin(outFile, fields, intValues, strValues);
     }
 
+    setConsistency('1', outFile);
     fclose(outFile);
 
     binarioNaTela(fileName);
@@ -171,7 +174,6 @@ void funcionalidade4() {
 }
 
 void funcionalidade5() {
-    //Register reg;
     char fileName[FILENAME_MAX];
     scanf("%s", fileName);
     FILE* outFile = fopen(fileName, "rb+");
@@ -180,6 +182,8 @@ void funcionalidade5() {
         printf("Falha no processamento do arquivo.");
         return;
     }
+    setConsistency('0', outFile);
+    fseek(outFile, 0, SEEK_SET);
     
     int qtdeInsercoes;
     scanf("%d", &qtdeInsercoes);
@@ -221,6 +225,7 @@ void funcionalidade5() {
         insertRegister(outFile, reg);
     }
     
+    setConsistency('1', outFile);
     fclose(outFile);
 
     binarioNaTela(fileName);
@@ -240,6 +245,8 @@ void funcionalidade6() {
         printf("Falha no processamento do arquivo.");
         return;
     }
+    setConsistency('0', outFile);
+    fseek(outFile, 0, SEEK_SET);
 
     scanf("%d", &qtdUpdates);
 
@@ -288,6 +295,7 @@ void funcionalidade6() {
 
     }
 
+    setConsistency('1', outFile);
     fclose(outFile);
     
     binarioNaTela(fileName);

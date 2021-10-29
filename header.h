@@ -53,6 +53,7 @@ long* getAllMatchingRegistersOffset(FILE* inFile, char* fields, int* intValues, 
 void updateRegisterByOffset(FILE* outFile, long offset, char* fields, int* intValues, char** strValues);
 Register registerStrToRegister(RegisterStr registerStr);
 void insertRegister(FILE* outFile, Register reg);
+void setConsistency(char consistency, FILE* outFile);
 
 //funcoesFornecidas.c
 void binarioNaTela(char *nomeArquivoBinario);
