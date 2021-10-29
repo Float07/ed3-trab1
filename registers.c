@@ -850,6 +850,8 @@ void insertRegister(FILE* outFile, Register reg) {
         //Se o tamanho do registro removido for maior, é escrito por cima dele
         //Senão, lê o próximo registro removido
         if(sizeDiff >= 0) {
+            fseek(outFile, offset, SEEK_SET);
+            reg.tamanhoRegistro = removedReg.tamanhoRegistro;
             writeRegister(outFile, reg);
 
             //Preenche o restante com lixo ('$')
