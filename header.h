@@ -6,7 +6,9 @@
 //que usar alocação dinâmica
 #define MAX_NAME_LENGTH 1024
 
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //registers.c
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 //Usado para representar um registro.
 struct Register{
@@ -55,7 +57,11 @@ Register registerStrToRegister(RegisterStr registerStr);
 void insertRegister(FILE* outFile, Register reg);
 void setConsistency(char consistency, FILE* outFile);
 
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //graphs.c
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+//Um elemento de uma lista encadeada de linhas
 typedef struct LinhasListElement LinhasListElement;
 struct LinhasListElement
 {
@@ -63,7 +69,7 @@ struct LinhasListElement
     LinhasListElement* next;
 };
 
-
+//Um elemento de uma lista encadeada de arestas
 typedef struct LinearListElement LinearListElement;
 struct LinearListElement
 {
@@ -73,6 +79,7 @@ struct LinearListElement
     LinearListElement* next;
 };
 
+//Um elemento de uma lista encadeada de vértices
 typedef struct VerticesArrayElement VerticesArrayElement;
 struct VerticesArrayElement {
     char nomeEstacao[MAX_NAME_LENGTH];
@@ -80,7 +87,10 @@ struct VerticesArrayElement {
     VerticesArrayElement* next;
 };
 
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //funcoesFornecidas.c
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 void binarioNaTela(char *nomeArquivoBinario);
 void scan_quote_string(char *str);
 
