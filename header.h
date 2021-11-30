@@ -55,6 +55,31 @@ Register registerStrToRegister(RegisterStr registerStr);
 void insertRegister(FILE* outFile, Register reg);
 void setConsistency(char consistency, FILE* outFile);
 
+//graphs.c
+typedef struct LinhasListElement LinhasListElement;
+struct LinhasListElement
+{
+    char nomeLinha[MAX_NAME_LENGTH];
+    LinhasListElement* next;
+};
+
+
+typedef struct LinearListElement LinearListElement;
+struct LinearListElement
+{
+    char nomeProxEst[MAX_NAME_LENGTH];
+    int distanciaProxEst;
+    LinhasListElement* linhasListHead;
+    LinearListElement* next;
+};
+
+typedef struct VerticesArrayElement VerticesArrayElement;
+struct VerticesArrayElement {
+    char nomeEstacao[MAX_NAME_LENGTH];
+    LinearListElement* linearListHead;
+    VerticesArrayElement* next;
+};
+
 //funcoesFornecidas.c
 void binarioNaTela(char *nomeArquivoBinario);
 void scan_quote_string(char *str);
