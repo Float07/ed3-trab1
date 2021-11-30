@@ -87,6 +87,8 @@ struct VerticesArrayElement {
     VerticesArrayElement* next;
 };
 
+void printGraph(FILE* inFile);
+
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //funcoesFornecidas.c
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
