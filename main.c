@@ -314,6 +314,22 @@ void funcionalidade6() {
     return;
 }
 
+void funcionalidade7() {
+    char inputFileName[MAX_FILENAME_SIZE];
+        scanf("%s", inputFileName);
+
+        FILE* inFile = fopen(inputFileName, "rb");
+
+        if(inFile == NULL){
+            printf("Falha no processamento do arquivo.\n");
+            return;
+        }
+
+    printGraph(FILE* inFile);
+    fclose(inputFileName);
+
+}
+
 
 int main(int argc, char *argv[]) {
     int funcionalidade; //Irá registrar a funcionalidade escolhida pelo usuário
@@ -349,6 +365,10 @@ int main(int argc, char *argv[]) {
     case 6:
         funcionalidade6();
         break;
+
+    case 7:
+        funcionalidade7();
+        break; 
 
     default:
         break;
