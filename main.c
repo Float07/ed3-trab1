@@ -316,18 +316,20 @@ void funcionalidade6() {
 
 void funcionalidade7() {
     char inputFileName[MAX_FILENAME_SIZE];
-        scanf("%s", inputFileName);
+    scanf("%s", inputFileName);
 
-        FILE* inFile = fopen(inputFileName, "rb");
+    FILE* inFile = fopen(inputFileName, "rb");
 
-        if(inFile == NULL){
-            printf("Falha no processamento do arquivo.\n");
-            return;
-        }
+    if(inFile == NULL){
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
 
-    printGraph(FILE* inFile);
+    printGraph(inFile);
+    
     fclose(inputFileName);
 
+    return;
 }
 
 
