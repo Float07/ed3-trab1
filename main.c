@@ -18,6 +18,11 @@ void funcionalidade1() {
         FILE* csvInput = fopen(inputFileName, "r");
         FILE* binOutput = fopen(outputFileName, "wb+");
 
+        if(csvInput == NULL || binOutput == NULL){
+            printf("Falha no processamento do arquivo.\n");
+            return;
+        }
+
         readCSV(csvInput, binOutput);
 
         fclose(csvInput);
@@ -34,6 +39,12 @@ void funcionalidade2() {
         scanf("%s", inputFileName);
 
         FILE* inFile = fopen(inputFileName, "rb");
+
+        if(inFile == NULL){
+            printf("Falha no processamento do arquivo.\n");
+            return;
+        }
+
         imprimiu = printBin(inFile);
         if(imprimiu==0){
             printf("Registro inexistente.");
