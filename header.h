@@ -80,11 +80,11 @@ struct LinearListElement
 };
 
 //Um elemento de uma lista encadeada de vértices
-typedef struct VerticesArrayElement VerticesArrayElement;
-struct VerticesArrayElement {
+typedef struct VerticesListElement VerticesListElement;
+struct VerticesListElement {
     char nomeEstacao[MAX_NAME_LENGTH];
     LinearListElement* linearListHead;
-    VerticesArrayElement* next;
+    VerticesListElement* next;
 };
 
 void printGraph(FILE* inFile);
