@@ -27,16 +27,19 @@ void printGraph (FILE* inFile) {
     VerticesListElement* verticesArrayHead = generateGraph(inFile);
 
     VerticesListElement* vertexCursor = verticesArrayHead;
+    //Loop responsável pela impressão dos vértices
     while (vertexCursor != NULL)
     {
         printf("%s", vertexCursor->nomeEstacao);
         
         EdgesListElement* edgeCursor = vertexCursor->edgesListHead;
+        //Loop responsável pela impressão das arestas
         while (edgeCursor != NULL)
         {
             printf(", %s, %d", edgeCursor->nomeProxEst, edgeCursor->distanciaProxEst);
 
             LinhasListElement* linhaCursor = edgeCursor->linhasListHead;
+            //Loop responsável pela impressão das linhas
             while (linhaCursor != NULL)
             {
                 printf(", %s", linhaCursor->nomeLinha);
