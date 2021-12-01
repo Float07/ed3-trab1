@@ -4,7 +4,7 @@
 #include "header.h"
 
 //NEEDS TO BE IMPLEMENTED
-VerticesListElement* addVertex(VerticesListElement* verticesArrayHead, Register reg);
+VerticesListElement* addRegToGraph(VerticesListElement* verticesArrayHead, Register reg);
 
 //Gera um grafo a partir de dados contidos em um arquivo binário
 VerticesListElement* generateGraph (FILE* inFile) {
@@ -15,7 +15,7 @@ VerticesListElement* generateGraph (FILE* inFile) {
     while ((reg = readRegister(inFile)).tamanhoRegistro)
     {
         if (!reg.removido) {
-            verticesArrayHead = addVertex(verticesArrayHead, reg);
+            verticesArrayHead = addRegToGraph(verticesArrayHead, reg);
         }
     }
     
