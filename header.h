@@ -94,7 +94,7 @@ struct EdgesListElement
 typedef struct VerticesListElement VerticesListElement;
 struct VerticesListElement {
     char nomeEstacao[MAX_NAME_LENGTH];
-    EdgesListElement* linearListHead;
+    EdgesListElement* edgesListHead;
     VerticesListElement* next;
 };
 
