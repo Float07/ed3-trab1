@@ -327,7 +327,7 @@ void funcionalidade7() {
 
     printGraph(inFile);
     
-    fclose(inputFileName);
+    fclose(inFile);
 
     return;
 }
