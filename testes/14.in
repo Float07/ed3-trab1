@@ -1,4 +1,1 @@
-4 estacao13.bin 3
-2 nomeEstacao "Luz" distProxEstacao 2310
-1 codEstacao 200
-2 nomeEstacao "Pinheiros" nomeLinha "Esmeralda"
+10 estacao1.bin nomeEstacaoOrigem "Vergueiro"

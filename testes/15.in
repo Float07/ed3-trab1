@@ -1,4 +1,1 @@
-4 estacao15.bin 3
-1 nomeEstacao "Engenheiro Goulart"
-2 nomeLinha "Verde" codLinhaIntegra 1
-3 nomeEstacao "Luz" distProxEstacao 2310 nomeLinha "Rubi" 
+10 estacao4.bin nomeEstacaoOrigem "Ipiranga"

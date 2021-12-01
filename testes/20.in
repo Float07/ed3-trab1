@@ -1,6 +1,1 @@
-5 estacao20.bin 5
-201 "IME-USP" 9 "Esmeralda" 200 10000 NULO NULO 
-202 "Poli" 4 "Amarela" 63 462 9 137 
-201 "Guarulhos-Terminal 3" 13 "Jade" 200 1010 NULO NULO
-203 "Sem nome" 10 NULO NULO NULO NULO NULO
-204 "Congonhas" 1 "Azul" 21 300 NULO NULO
+11 estacao1.bin nomeEstacaoOrigem "Luz" nomeEstacaoDestino "Sao Caetano do Sul"
