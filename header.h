@@ -56,6 +56,8 @@ void updateRegisterByOffset(FILE* outFile, long offset, char* fields, int* intVa
 Register registerStrToRegister(RegisterStr registerStr);
 void insertRegister(FILE* outFile, Register reg);
 void setConsistency(char consistency, FILE* outFile);
+FileHeader readHeader(FILE* inFile);
+Register readRegister(FILE* inFile);
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //graphs.c
