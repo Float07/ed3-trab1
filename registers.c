@@ -9,15 +9,6 @@
 //Quantidade de bytes do header no arquivo binário
 #define BIN_HEADER_SIZE 17 
 
-//Tipo para representar o cabeçalho do arquivo binário
-struct FileHeader{
-    char status;
-    long topoLista;
-    int nroEstacoes;
-    int nroParesEstacao;
-};
-typedef struct FileHeader FileHeader;
-
 /*
 * FUNÇÕES DE DEBUGGING
 * Utilizadas para ajudar no desenvolvimento do código.

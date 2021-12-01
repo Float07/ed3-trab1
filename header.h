@@ -47,6 +47,15 @@ struct RegisterStr{
 };
 typedef struct RegisterStr RegisterStr;
 
+//Tipo para representar o cabeçalho do arquivo binário
+struct FileHeader{
+    char status;
+    long topoLista;
+    int nroEstacoes;
+    int nroParesEstacao;
+};
+typedef struct FileHeader FileHeader;
+
 void deleteMatchingBin(FILE* outFile, char* fields, int* intValues, char** strValues);
 int printBin(FILE* inFile);
 void readCSV(FILE* inFile, FILE* outFile);
