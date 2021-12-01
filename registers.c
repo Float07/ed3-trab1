@@ -370,7 +370,7 @@ Register updateRegister(Register reg, char* fields, int* intValues, char** strVa
 
 /*
 * FUNÇÕES EXTERNAS
-* Utilizadas fora de "aux.c"
+* Utilizadas fora de "registers.c"
 * Essas funções estão declaradas em "header.h"
 */
 

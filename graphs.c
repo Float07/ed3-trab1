@@ -7,7 +7,7 @@
 
 /*
 * FUNÇÕES INTERNAS
-* Utilizadas somente em "registers.c"
+* Utilizadas somente em "graphs.c"
 */
 
 //Adiciona um registro ao grafo
@@ -33,7 +33,7 @@ VerticesListElement* generateGraph (FILE* inFile) {
 
 /*
 * FUNÇÕES EXTERNAS
-* Utilizadas fora de "aux.c"
+* Utilizadas fora de "graphs.c"
 * Essas funções estão declaradas em "header.h"
 */
 
