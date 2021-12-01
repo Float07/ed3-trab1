@@ -81,20 +81,20 @@ struct LinhasListElement
 };
 
 //Um elemento de uma lista encadeada de arestas
-typedef struct LinearListElement LinearListElement;
-struct LinearListElement
+typedef struct EdgesListElement EdgesListElement;
+struct EdgesListElement
 {
     char nomeProxEst[MAX_NAME_LENGTH];
     int distanciaProxEst;
     LinhasListElement* linhasListHead;
-    LinearListElement* next;
+    EdgesListElement* next;
 };
 
 //Um elemento de uma lista encadeada de vértices
 typedef struct VerticesListElement VerticesListElement;
 struct VerticesListElement {
     char nomeEstacao[MAX_NAME_LENGTH];
-    LinearListElement* linearListHead;
+    EdgesListElement* linearListHead;
     VerticesListElement* next;
 };
 
