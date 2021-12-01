@@ -3,8 +3,17 @@
 #include <string.h>
 #include "header.h"
 
-//NEEDS TO BE IMPLEMENTED
-VerticesListElement* addRegToGraph(VerticesListElement* verticesArrayHead, Register reg);
+
+
+/*
+* FUNÇÕES INTERNAS
+* Utilizadas somente em "registers.c"
+*/
+
+//Adiciona um registro ao grafo
+VerticesListElement* addRegToGraph (VerticesListElement* verticesArrayHead, Register reg) {
+    return NULL;
+}
 
 //Gera um grafo a partir de dados contidos em um arquivo binário
 VerticesListElement* generateGraph (FILE* inFile) {
@@ -21,6 +30,12 @@ VerticesListElement* generateGraph (FILE* inFile) {
     
     return verticesArrayHead;
 }
+
+/*
+* FUNÇÕES EXTERNAS
+* Utilizadas fora de "aux.c"
+* Essas funções estão declaradas em "header.h"
+*/
 
 //Gera e imprime um grafo a partir de um arquivo binário
 void printGraph (FILE* inFile) {

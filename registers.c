@@ -183,89 +183,6 @@ int writeRegister(FILE* outFile, Register reg) {
     return 0;
 }
 
-//Lê o header do binário, retorna um FileHeader, e posiciona o cursor logo após o header
-FileHeader readHeader(FILE* inFile) {
-    fseek(inFile, 0, SEEK_SET);
-
-    FileHeader fileHeader;
-
-    fread(&(fileHeader.status), sizeof(char), 1, inFile);
-    fread(&(fileHeader.topoLista), sizeof(long), 1, inFile);
-    fread(&(fileHeader.nroEstacoes), sizeof(int), 1, inFile);
-    fread(&(fileHeader.nroParesEstacao), sizeof(int), 1, inFile);
-
-    return fileHeader;
-}
-
-//Lê um registro do arquivo binário e retorna um Register
-//O cursor deve estar previamente posicionado no primeiro byte do registro
-//No final da execução, o cursor será posicionado no primeiro byte do registro seguinte
-//Caso chegue ao final do arquivo, será retornado um registro com tamanhoRegistro = 0
-Register readRegister(FILE* inFile) {
-    Register reg;
-    char tempString[MAX_NAME_LENGTH];
-
-    //Leitura dos campos de tamanho fixo
-    if (fread(&(reg.removido), sizeof(char), 1, inFile) == 0) {
-        //Retorna um registro de tamanho 0 se chegou ao final do arquivo
-        reg.tamanhoRegistro = 0;
-        return reg;
-    }
-
-    fread(&(reg.tamanhoRegistro), sizeof(int), 1, inFile);
-
-    fread(&(reg.proxLista), sizeof(long), 1, inFile);  
-    if (reg.removido == '1') {
-        //Se o registro foi removido, posiciona o cursor no final do registro removido e o retorna
-       fseek(inFile, reg.tamanhoRegistro - sizeof(long), SEEK_CUR);
-       return reg; 
-    }
-
-
-    fread(&(reg.codEstacao), sizeof(int), 1, inFile);
-    fread(&(reg.codLinha), sizeof(int), 1, inFile);
-    fread(&(reg.codProxEstacao), sizeof(int), 1, inFile);
-    fread(&(reg.distProxEstacao), sizeof(int), 1, inFile);
-    fread(&(reg.codLinhaIntegra), sizeof(int), 1, inFile);
-    fread(&(reg.codEstIntegra), sizeof(int), 1, inFile);
-    int tamanhoRestante = reg.tamanhoRegistro - 32;
-
-    //Leitura dos dois campos de tamanho variável
-    for (int i = 0; i < MAX_NAME_LENGTH; i++)
-    {
-        char c = getc(inFile);
-        tamanhoRestante--;
-        if(c == '|'){
-            tempString[i] = '\0';
-            break;
-        }
-        else{
-            tempString[i] = c;
-        }
-    }
-    strcpy(reg.nomeEstacao, tempString);
-    
-
-    for (int i = 0; i < MAX_NAME_LENGTH; i++)
-    {
-        char c = getc(inFile);
-        tamanhoRestante--;
-        if(c == '|'){
-            tempString[i] = '\0';
-            break;
-        }
-        else{
-            tempString[i] = c;
-        }
-    }
-    strcpy(reg.nomeLinha, tempString);
-
-    //Pula o "lixo" caso exista. Caso não exista, tamanhoRestante será igual a 0
-    fseek(inFile, tamanhoRestante, SEEK_CUR);
-
-    return reg;
-}
-
 //Retorna o registro na posição "offset" do arquivo "inFile"
 Register getRegisterByOffset(FILE* inFile, long offset) {
     fseek(inFile, offset, SEEK_SET);
@@ -456,6 +373,89 @@ Register updateRegister(Register reg, char* fields, int* intValues, char** strVa
 * Utilizadas fora de "aux.c"
 * Essas funções estão declaradas em "header.h"
 */
+
+//Lê um registro do arquivo binário e retorna um Register
+//O cursor deve estar previamente posicionado no primeiro byte do registro
+//No final da execução, o cursor será posicionado no primeiro byte do registro seguinte
+//Caso chegue ao final do arquivo, será retornado um registro com tamanhoRegistro = 0
+Register readRegister(FILE* inFile) {
+    Register reg;
+    char tempString[MAX_NAME_LENGTH];
+
+    //Leitura dos campos de tamanho fixo
+    if (fread(&(reg.removido), sizeof(char), 1, inFile) == 0) {
+        //Retorna um registro de tamanho 0 se chegou ao final do arquivo
+        reg.tamanhoRegistro = 0;
+        return reg;
+    }
+
+    fread(&(reg.tamanhoRegistro), sizeof(int), 1, inFile);
+
+    fread(&(reg.proxLista), sizeof(long), 1, inFile);  
+    if (reg.removido == '1') {
+        //Se o registro foi removido, posiciona o cursor no final do registro removido e o retorna
+       fseek(inFile, reg.tamanhoRegistro - sizeof(long), SEEK_CUR);
+       return reg; 
+    }
+
+
+    fread(&(reg.codEstacao), sizeof(int), 1, inFile);
+    fread(&(reg.codLinha), sizeof(int), 1, inFile);
+    fread(&(reg.codProxEstacao), sizeof(int), 1, inFile);
+    fread(&(reg.distProxEstacao), sizeof(int), 1, inFile);
+    fread(&(reg.codLinhaIntegra), sizeof(int), 1, inFile);
+    fread(&(reg.codEstIntegra), sizeof(int), 1, inFile);
+    int tamanhoRestante = reg.tamanhoRegistro - 32;
+
+    //Leitura dos dois campos de tamanho variável
+    for (int i = 0; i < MAX_NAME_LENGTH; i++)
+    {
+        char c = getc(inFile);
+        tamanhoRestante--;
+        if(c == '|'){
+            tempString[i] = '\0';
+            break;
+        }
+        else{
+            tempString[i] = c;
+        }
+    }
+    strcpy(reg.nomeEstacao, tempString);
+    
+
+    for (int i = 0; i < MAX_NAME_LENGTH; i++)
+    {
+        char c = getc(inFile);
+        tamanhoRestante--;
+        if(c == '|'){
+            tempString[i] = '\0';
+            break;
+        }
+        else{
+            tempString[i] = c;
+        }
+    }
+    strcpy(reg.nomeLinha, tempString);
+
+    //Pula o "lixo" caso exista. Caso não exista, tamanhoRestante será igual a 0
+    fseek(inFile, tamanhoRestante, SEEK_CUR);
+
+    return reg;
+}
+
+//Lê o header do binário, retorna um FileHeader, e posiciona o cursor logo após o header
+FileHeader readHeader(FILE* inFile) {
+    fseek(inFile, 0, SEEK_SET);
+
+    FileHeader fileHeader;
+
+    fread(&(fileHeader.status), sizeof(char), 1, inFile);
+    fread(&(fileHeader.topoLista), sizeof(long), 1, inFile);
+    fread(&(fileHeader.nroEstacoes), sizeof(int), 1, inFile);
+    fread(&(fileHeader.nroParesEstacao), sizeof(int), 1, inFile);
+
+    return fileHeader;
+}
 
 //Imprime os registros de um binário que atendem ao critério de busca
 //Parâmetros:
