@@ -10,23 +10,28 @@
 * Utilizadas somente em "graphs.c"
 */
 
+VerticesListElement* addVertexToGraph();
+EdgesListElement* addEdgeToGraph();
+LinhasListElement* addLinhaToGraph();
+
 //Adiciona um registro ao grafo
-VerticesListElement* addRegToGraph (VerticesListElement* verticesArrayHead, Register reg) {
+VerticesListElement* addRegToGraph (VerticesListElement* verticesArrayHead, int addedRegIndex,
+                                    Register* regArray, int arrayAmount) {
+    return NULL;
+}
+
+//Lê um arquivo binário e retorna um vetor com todos os registros contidos nele
+Register* allRegistersToArray (FILE* inFile, int* arraySize) {
+    int chunkSize = 100;
+
     return NULL;
 }
 
 //Gera um grafo a partir de dados contidos em um arquivo binário
 VerticesListElement* generateGraph (FILE* inFile) {
     VerticesListElement* verticesArrayHead = NULL;
-    readHeader(inFile);
-
-    Register reg;
-    while ((reg = readRegister(inFile)).tamanhoRegistro)
-    {
-        if (!reg.removido) {
-            verticesArrayHead = addRegToGraph(verticesArrayHead, reg);
-        }
-    }
+   
+    //NEEDS IMPLEMENTATION
     
     return verticesArrayHead;
 }
