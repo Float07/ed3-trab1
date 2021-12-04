@@ -58,7 +58,7 @@ VerticesListElement* generateGraph (FILE* inFile) {
    
     //NEEDS IMPLEMENTATION
     
-    return verticesArrayHead;
+    return NULL;
 }
 
 /*
