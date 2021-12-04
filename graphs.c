@@ -22,14 +22,39 @@ VerticesListElement* addRegToGraph (VerticesListElement* verticesArrayHead, int 
 
 //Lê um arquivo binário e retorna um vetor com todos os registros contidos nele
 Register* allRegistersToArray (FILE* inFile, int* arraySize) {
-    int chunkSize = 100;
+    int chunkSize = 100; //Tamanho de cada "pedaço" alocado por cada malloc/realloc
+    int currentAllocatedSize = chunkSize;
+
+    Register* regArray = (Register*) malloc(currentAllocatedSize*sizeof(Register));
+    *arraySize = 0;
+
+    Register reg;
+    while ((reg = readRegister(inFile)).tamanhoRegistro)
+    {
+        if (!reg.removido) {
+            //Adiciona o registro no vetor
+            regArray[*arraySize] = reg;
+            
+            //Checa se precisa expandir o vetor
+            (*arraySize)++;
+            if (!((*arraySize)%chunkSize))
+            {
+                currentAllocatedSize += chunkSize;
+                regArray = (Register*) realloc(regArray, currentAllocatedSize*sizeof(Register));
+            }
+        }
+        
+    }
+    
 
     return NULL;
 }
 
 //Gera um grafo a partir de dados contidos em um arquivo binário
 VerticesListElement* generateGraph (FILE* inFile) {
-    VerticesListElement* verticesArrayHead = NULL;
+    //Cria um vetor com todos os registros
+    int arraySize = 0;
+    Register* regArray = allRegistersToArray(inFile, &arraySize);
    
     //NEEDS IMPLEMENTATION
     
