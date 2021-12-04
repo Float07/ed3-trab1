@@ -46,8 +46,7 @@ Register* allRegistersToArray (FILE* inFile, int* arraySize) {
         
     }
     
-
-    return NULL;
+    return regArray;
 }
 
 //Gera um grafo a partir de dados contidos em um arquivo binário
