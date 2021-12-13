@@ -332,6 +332,29 @@ void funcionalidade7() {
     return;
 }
 
+void funcionalidade8() {
+    char fileName[MAX_FILENAME_SIZE];//Arquivo binário que contem os registros
+    char startingEstacao[MAX_FILENAME_SIZE];//Estação de origem, de onde partiremos
+    char destEstacao[MAX_FILENAME_SIZE];//Estação de destino, onde queremos chegar
+
+    scanf("%s", fileName);
+
+    scanf("%*s");//Pula "nomeEstacaoOrigem"
+    scan_quote_string(startingEstacao);
+    scanf("%*s");//Pula "nomeEstacaoDestino"
+    scan_quote_string(destEstacao);
+
+    FILE* inFile = fopen(fileName, "rb");
+    if(inFile == NULL) {
+        printf("Falha na execução da funcionalidade.");
+        return;
+    }
+
+    printDijkstra(inFile, startingEstacao, destEstacao);
+
+    fclose(inFile);
+}
+
 
 int main(int argc, char *argv[]) {
     int funcionalidade; //Irá registrar a funcionalidade escolhida pelo usuário
@@ -371,6 +394,10 @@ int main(int argc, char *argv[]) {
     case 7:
         funcionalidade7();
         break; 
+    
+    case 8:
+        funcionalidade8();
+        break;
 
     default:
         break;

@@ -345,6 +345,52 @@ VerticesListElement* generateGraph (FILE* inFile) {
     return graph;
 }
 
+//Limpa a memória utilizada por um caminho path
+void freePath (Path* path) {
+    //NEEDS TO BE IMPLEMENTED
+}
+
+//Imprime um caminho definido pela variável path
+void printPath (Path* path) {
+    int verticesAmount = 0;
+    int totalDistance = 0;
+    Path* pathCursor = path;
+
+    //Calcula e imprime a distância e número de vértices percorridos
+    while (pathCursor != NULL)
+    {
+        verticesAmount++;
+        totalDistance += pathCursor->distance;
+        
+        pathCursor = pathCursor->next;
+    }
+    printf("Numero de estacoes que serao percorridas: %d\n", verticesAmount);
+    printf("Distancia que sera percorrida: %d\n", totalDistance);
+
+    //Imprime o caminho percorrido
+    pathCursor = path;
+    while (pathCursor != NULL)
+    {
+        printf("%s", pathCursor->nomeEstacao);
+
+        pathCursor = pathCursor->next;
+        if (pathCursor != NULL) printf(", ");
+    }
+    
+    return;
+}
+
+//Encontra e retorna o caminho mais rápido entre a estação origem e a estação destino
+//Parâmetros:
+//graph -> Ponteiro para a primeira estação no vetor de estações na lista de adjacências
+//startingEstacao -> Nome da estação da qual iremos partir
+//destEstacao -> Nome da estação na qual queremos chegar
+Path* findPathDijkstra (VerticesListElement* graph, char* startingEstacao, char* destEstacao) {
+    
+    //NEEDS IMPLEMENTATION
+
+}
+
 /*
 * FUNÇÕES EXTERNAS
 * Utilizadas fora de "graphs.c"
@@ -353,9 +399,9 @@ VerticesListElement* generateGraph (FILE* inFile) {
 
 //Gera e imprime um grafo a partir de um arquivo binário
 void printGraph (FILE* inFile) {
-    VerticesListElement* verticesArrayHead = generateGraph(inFile);
+    VerticesListElement* verticesListHead = generateGraph(inFile);
 
-    VerticesListElement* vertexCursor = verticesArrayHead;
+    VerticesListElement* vertexCursor = verticesListHead;
     //Loop responsável pela impressão dos vértices
     while (vertexCursor != NULL)
     {
@@ -383,4 +429,18 @@ void printGraph (FILE* inFile) {
         if (vertexCursor != NULL) printf("\n");
     }
     
+}
+
+//Imprime o caminho mais rápido entre dois nós utiliziando o algoritmo de Dijkstra
+//Parâmetros:
+//Infile -> Arquivo binário cujo dados serão usados para criar o grafo
+//startingEstacao -> Estação de origem
+//destEstacao -> Estação de destino, onde se quer chegar
+void printDijkstra (FILE* inFile, char* startingEstacao, char* destEstacao) {
+    VerticesListElement* graph = generateGraph(inFile);
+    Path* fastestPath = findPathDijkstra(graph, startingEstacao, destEstacao);
+
+    printPath(fastestPath);
+
+    freePath(fastestPath);
 }

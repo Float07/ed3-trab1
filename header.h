@@ -98,7 +98,19 @@ struct VerticesListElement {
     VerticesListElement* next;
 };
 
+//Representa um caminho no grafo
+//Cada nó representa um destino e a distância para chegar nele a partir do nó anterior
+typedef struct Path Path;
+struct Path
+{
+    char nomeEstacao[MAX_NAME_LENGTH];
+    int distance;
+    Path* next;
+};
+
+
 void printGraph(FILE* inFile);
+void printDijkstra (FILE* inFile, char* startingEstacao, char* destEstacao);
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //funcoesFornecidas.c
