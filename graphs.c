@@ -10,14 +10,294 @@
 * Utilizadas somente em "graphs.c"
 */
 
-VerticesListElement* addVertexToGraph();
-EdgesListElement* addEdgeToGraph();
-LinhasListElement* addLinhaToGraph();
+VerticesListElement* addVertexToGraph(VerticesListElement* verticesListHead, int addedRegIndex, Register* regArray, int arrayAmount){
+    VerticesListElement * verticeAux = NULL;
+    VerticesListElement * verticeInsert = NULL;
+
+    if(verticesListHead==NULL){
+        verticesListHead = (VerticesListElement*) malloc(sizeof(VerticesListElement));
+        strcpy (verticesListHead->nomeEstacao, regArray[addedRegIndex].nomeEstacao);
+        verticesListHead->next = NULL;
+        verticesListHead->edgesListHead = NULL;
+        return verticesListHead; 
+    }else{
+
+        if(verticesListHead->next==NULL){
+
+            if (strcmp(verticesListHead->nomeEstacao,regArray[addedRegIndex].nomeEstacao)>=0)
+            {
+                if (strcmp(verticesListHead->nomeEstacao,regArray[addedRegIndex].nomeEstacao)==0){
+                    return verticesListHead;
+                }
+                verticeInsert = (VerticesListElement*) malloc(sizeof(VerticesListElement));
+                strcpy(verticeInsert->nomeEstacao,regArray[addedRegIndex].nomeEstacao);
+                verticeInsert->edgesListHead = NULL;
+                verticeInsert->next = verticesListHead;
+                verticesListHead = verticeInsert;
+                return verticesListHead;
+            }else{
+                verticeInsert = (VerticesListElement*) malloc(sizeof(VerticesListElement));
+                strcpy(verticeInsert->nomeEstacao,regArray[addedRegIndex].nomeEstacao);
+                verticeInsert->edgesListHead = NULL;
+                verticeInsert->next = NULL;
+                verticesListHead->next = verticeInsert;
+                return verticesListHead;
+            }
+
+        }else{
+            verticeAux = verticesListHead;
+            while (1)
+            {
+                if(strcmp(verticeAux->next->nomeEstacao,regArray[addedRegIndex].nomeEstacao)>=0){
+                    if (strcmp(verticeAux->nomeEstacao,regArray[addedRegIndex].nomeEstacao)==0){
+                        return verticesListHead;
+                    }
+                    verticeInsert = (VerticesListElement*) malloc(sizeof(VerticesListElement));
+                    strcpy(verticeInsert->nomeEstacao,regArray[addedRegIndex].nomeEstacao);   
+                    verticeInsert->edgesListHead = NULL;
+                    verticeInsert->next = verticeAux->next;
+                    verticeAux->next=verticeInsert;
+                    return verticesListHead;
+
+                }else{
+                    verticeAux = verticeAux->next;
+                    if(verticeAux->next->next==NULL){
+                        if (strcmp(verticeAux->next->nomeEstacao,regArray[addedRegIndex].nomeEstacao)>=0)
+                        {
+                            if (strcmp(verticeAux->next->nomeEstacao,regArray[addedRegIndex].nomeEstacao)==0){
+                                return verticesListHead;
+                            }
+                            verticeInsert = (VerticesListElement*) malloc(sizeof(VerticesListElement));
+                            strcpy(verticeInsert->nomeEstacao,regArray[addedRegIndex].nomeEstacao);
+                            verticeInsert->edgesListHead = NULL;
+                            verticeInsert->next = verticeAux->next;
+                            verticeAux->next = verticeInsert;
+                            return verticesListHead;
+                        }else{
+                            verticeInsert = (VerticesListElement*) malloc(sizeof(VerticesListElement));
+                            strcpy(verticeInsert->nomeEstacao,regArray[addedRegIndex].nomeEstacao);
+                            verticeInsert->edgesListHead = NULL;
+                            verticeInsert->next = NULL;
+                            verticeAux->next->next = verticeInsert;
+                            return verticesListHead;
+                        }                        
+                    }
+                }
+            } 
+        }    
+    }
+    return verticesListHead;
+}
+
+void addEdgeIntegraToGraph(VerticesListElement* verticesListHead, int addedRegIndex, Register* regArray, int arrayAmount){
+    EdgesListElement *edgeInsert = NULL, *edgeAux = NULL, *edgeAuxAnt = NULL;
+    VerticesListElement *verticeAux = NULL;
+    LinhasListElement *linhaInsert = NULL, *linhaAux=NULL, *linhaAuxAnt = NULL;
+    int index;
+    char nomeProxEstacao[MAX_NAME_LENGTH], nomeLinha[MAX_NAME_LENGTH];
+
+    //Verifica se existe lista de vertices
+    if(verticesListHead==NULL){
+        return;
+    }
+
+    //Verifica se esxiste linha de integracao
+    if(regArray[addedRegIndex].codEstIntegra!=-1){
+        index = regArray[addedRegIndex].codEstIntegra - 1;
+        strcpy(nomeProxEstacao,regArray[index].nomeEstacao);
+        strcpy(nomeLinha,"Integra");
+        verticeAux = verticesListHead;
+        
+        //Encontra o vertice na lista de vertices para adicionar a aresta
+        while (strcmp(verticeAux->nomeEstacao,regArray[addedRegIndex].nomeEstacao)!=0)
+        {
+            verticeAux = verticeAux->next;
+            if(verticeAux==NULL){
+                //Para o caso de nao existir o vertice
+                return;
+            }
+        }
+
+        edgeAux = verticeAux->edgesListHead;
+        edgeAuxAnt = edgeAux;
+        //Verifica se a aresta existe e adiciona ordenadamente
+        while (edgeAux!=NULL)
+        {
+           if(strcmp(nomeProxEstacao, edgeAux->nomeProxEst)<=0){
+               //Se ja existe aresta ele ira verificar a linha
+               if(strcmp(nomeProxEstacao, edgeAux->nomeProxEst)==0){
+                   linhaAux = edgeAux->linhasListHead;
+                   linhaAuxAnt = linhaAux;
+                   //Verifica se a linha esta na aresta e tenta adicionar ordenadamente
+                   while (linhaAux!=NULL)
+                   {
+                       if(strcmp(nomeLinha,linhaAux->nomeLinha)<=0){
+                           if (strcmp(nomeLinha,linhaAux->nomeLinha)==0)
+                           {
+                               //Se ja existe a linha
+                               return;
+                           }
+                           //Adiciona a linha
+                           linhaInsert = (LinhasListElement*) malloc (sizeof(LinhasListElement));
+                           strcpy(linhaInsert->nomeLinha,nomeLinha);
+                           linhaInsert->next = linhaAux;
+                           linhaAuxAnt->next = linhaInsert;
+                           return;
+                       }
+                       linhaAuxAnt = linhaAux;
+                       linhaAux = linhaAux->next;
+                   }
+                   //Adiciona a linha no final
+                   linhaInsert = (LinhasListElement*) malloc (sizeof(LinhasListElement));
+                   strcpy(linhaInsert->nomeLinha,nomeLinha);
+                   linhaInsert->next = linhaAux;
+                   linhaAuxAnt->next = linhaInsert;
+                   return;
+               }
+               //Adciona a aresta
+               edgeInsert = (EdgesListElement*) malloc (sizeof(EdgesListElement));
+               strcpy(edgeInsert->nomeProxEst,nomeProxEstacao);
+               edgeInsert->distanciaProxEst = regArray[addedRegIndex].distProxEstacao;
+               edgeInsert->next = edgeAux;
+               edgeAuxAnt->next = edgeInsert;
+               linhaInsert = (LinhasListElement*) malloc (sizeof(LinhasListElement));
+               strcpy(linhaInsert->nomeLinha,nomeLinha);
+               linhaInsert->next = NULL;
+               edgeAux->linhasListHead = linhaInsert;
+               return;
+           }
+           edgeAuxAnt = edgeAux;
+           edgeAux = edgeAux->next;
+        }
+        //Adiciona a aresta no final
+        edgeInsert = (EdgesListElement*) malloc (sizeof(EdgesListElement));
+        strcpy(edgeInsert->nomeProxEst,nomeProxEstacao);
+        edgeInsert->distanciaProxEst = 0;
+        edgeInsert->next = edgeAux;
+        edgeAuxAnt->next = edgeInsert;
+        linhaInsert = (LinhasListElement*) malloc (sizeof(LinhasListElement));
+        strcpy(linhaInsert->nomeLinha,nomeLinha);
+        linhaInsert->next = NULL;
+        edgeAux->linhasListHead = linhaInsert;
+        return;
+    }
+}
+
+void addEdgeToGraph(VerticesListElement* verticesListHead, int addedRegIndex, Register* regArray, int arrayAmount){
+    EdgesListElement *edgeInsert = NULL, *edgeAux = NULL, *edgeAuxAnt = NULL;
+    VerticesListElement *verticeAux = NULL;
+    LinhasListElement *linhaInsert = NULL, *linhaAux=NULL, *linhaAuxAnt = NULL;
+    int index;
+    char nomeProxEstacao[MAX_NAME_LENGTH], nomeLinha[MAX_NAME_LENGTH];
+
+    //Verifica se existe lista de vertices
+    if(verticesListHead==NULL){
+        return;
+    }
+
+    //Verifica se esxiste linha comum
+    if(regArray[addedRegIndex].codProxEstacao!=-1){
+        index = regArray[addedRegIndex].codProxEstacao - 1;
+        strcpy(nomeProxEstacao,regArray[index].nomeEstacao);
+        strcpy(nomeLinha,regArray[addedRegIndex].nomeLinha);
+        verticeAux = verticesListHead;
+        
+        //Encontra o vertice na lista de vertices para adicionar a aresta
+        while (strcmp(verticeAux->nomeEstacao,regArray[addedRegIndex].nomeEstacao)!=0)
+        {
+            verticeAux = verticeAux->next;
+            if(verticeAux==NULL){
+                //Para o caso de nao existir o vertice
+                return;
+            }
+        }
+
+        edgeAux = verticeAux->edgesListHead;
+        edgeAuxAnt = edgeAux;
+        //Verifica se a aresta existe e adiciona ordenadamente
+        while (edgeAux!=NULL)
+        {
+           if(strcmp(nomeProxEstacao, edgeAux->nomeProxEst)<=0){
+               //Se ja existe aresta ele ira verificar a linha
+               if(strcmp(nomeProxEstacao, edgeAux->nomeProxEst)==0){
+                   linhaAux = edgeAux->linhasListHead;
+                   linhaAuxAnt = linhaAux;
+                   //Verifica se a linha esta na aresta e tenta adicionar ordenadamente
+                   while (linhaAux!=NULL)
+                   {
+                       if(strcmp(nomeLinha,linhaAux->nomeLinha)<=0){
+                           if (strcmp(nomeLinha,linhaAux->nomeLinha)==0)
+                           {
+                               //Se ja existe a linha
+                               return;
+                           }
+                           //Adiciona a linha
+                           linhaInsert = (LinhasListElement*) malloc (sizeof(LinhasListElement));
+                           strcpy(linhaInsert->nomeLinha,nomeLinha);
+                           linhaInsert->next = linhaAux;
+                           linhaAuxAnt->next = linhaInsert;
+                           return;
+                       }
+                       linhaAuxAnt = linhaAux;
+                       linhaAux = linhaAux->next;
+                   }
+                   //Adiciona a linha no final
+                   linhaInsert = (LinhasListElement*) malloc (sizeof(LinhasListElement));
+                   strcpy(linhaInsert->nomeLinha,nomeLinha);
+                   linhaInsert->next = linhaAux;
+                   linhaAuxAnt->next = linhaInsert;
+                   return;
+               }
+               //Adciona a aresta
+               edgeInsert = (EdgesListElement*) malloc (sizeof(EdgesListElement));
+               strcpy(edgeInsert->nomeProxEst,nomeProxEstacao);
+               edgeInsert->distanciaProxEst = regArray[addedRegIndex].distProxEstacao;
+               edgeInsert->next = edgeAux;
+               edgeAuxAnt->next = edgeInsert;
+               linhaInsert = (LinhasListElement*) malloc (sizeof(LinhasListElement));
+               strcpy(linhaInsert->nomeLinha,nomeLinha);
+               linhaInsert->next = NULL;
+               edgeAux->linhasListHead = linhaInsert;
+               return;
+           }
+           edgeAuxAnt = edgeAux;
+           edgeAux = edgeAux->next;
+        }
+        //Adiciona a aresta no final
+        edgeInsert = (EdgesListElement*) malloc (sizeof(EdgesListElement));
+        strcpy(edgeInsert->nomeProxEst,nomeProxEstacao);
+        edgeInsert->distanciaProxEst = regArray[addedRegIndex].distProxEstacao;
+        edgeInsert->next = edgeAux;
+        edgeAuxAnt->next = edgeInsert;
+        linhaInsert = (LinhasListElement*) malloc (sizeof(LinhasListElement));
+        strcpy(linhaInsert->nomeLinha,nomeLinha);
+        linhaInsert->next = NULL;
+        edgeAux->linhasListHead = linhaInsert;
+        return;
+    }
+}
+
+/* Ele ira adicinar a linha na funcao de adicionar aresta
+void addLinhaToGraph(){
+    return;
+}
+*/
 
 //Adiciona um registro ao grafo
-VerticesListElement* addRegToGraph (VerticesListElement* verticesArrayHead, int addedRegIndex,
+VerticesListElement* addRegToGraph (VerticesListElement* verticesListHead, int addedRegIndex,
                                     Register* regArray, int arrayAmount) {
-    return NULL;
+    
+    if(addedRegIndex>arrayAmount){
+        return NULL;
+    }
+
+    verticesListHead = addVertexToGraph(verticesListHead, addedRegIndex, regArray, arrayAmount);
+
+    addEdgeToGraph(verticesListHead, addedRegIndex, regArray, arrayAmount);
+    addEdgeIntegraToGraph(verticesListHead, addedRegIndex, regArray, arrayAmount);
+
+    return verticesListHead;
+    
 }
 
 //Lê um arquivo binário e retorna um vetor com todos os registros contidos nele
@@ -51,15 +331,18 @@ Register* allRegistersToArray (FILE* inFile, int* arraySize) {
 
 //Gera um grafo a partir de dados contidos em um arquivo binário
 VerticesListElement* generateGraph (FILE* inFile) {
+    VerticesListElement* graph = NULL;
     //Cria um vetor com todos os registros
     int arraySize = 0;
     Register* regArray = allRegistersToArray(inFile, &arraySize);
    
-    //NEEDS IMPLEMENTATION
+    //Adiciona os registros do vetor de registro no grafo
+    for(int i=0; i<arraySize; i++){
+        graph = addRegToGraph(graph, i, regArray, arraySize);
+    }
     
-    free(regArray);
-
-    return NULL;
+    
+    return graph;
 }
 
 /*
