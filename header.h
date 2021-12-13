@@ -67,6 +67,7 @@ void insertRegister(FILE* outFile, Register reg);
 void setConsistency(char consistency, FILE* outFile);
 FileHeader readHeader(FILE* inFile);
 Register readRegister(FILE* inFile);
+void printRegister(Register reg);
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //graphs.c

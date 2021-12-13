@@ -312,10 +312,11 @@ Register* allRegistersToArray (FILE* inFile, int* arraySize) {
     Register* regArray = (Register*) malloc(currentAllocatedSize*sizeof(Register));
     *arraySize = 0;
 
+    readHeader(inFile);
     Register reg;
     while ((reg = readRegister(inFile)).tamanhoRegistro)
     {
-        if (!reg.removido) {
+        if (reg.removido == '0') {
             //Adiciona o registro no vetor
             regArray[*arraySize] = reg;
             
