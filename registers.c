@@ -100,52 +100,6 @@ Register stringToRegister(char* registerStr) {
     return reg;
 }
 
-//Imprime os valores de um dado do tipo Register
-void printRegister(Register reg) {
-    if (reg.removido == '1')
-        return;
-
-    int codEstacao = reg.codEstacao;
-
-    char nomeEstacao[MAX_NAME_LENGTH];
-    strcpy(nomeEstacao, reg.nomeEstacao);
-
-    char codLinha[32];
-    sprintf(codLinha, "%d", reg.codLinha);
-    if(!strcmp(codLinha, "-1"))
-        strcpy(codLinha, "NULO");
-
-    char nomeLinha[MAX_NAME_LENGTH];
-    strcpy(nomeLinha, reg.nomeLinha);
-    if(!strlen(nomeLinha))
-        strcpy(nomeLinha, "NULO");
-
-    char codProxEstacao[32];
-    sprintf(codProxEstacao, "%d", reg.codProxEstacao);
-    if(!strcmp(codProxEstacao, "-1"))
-        strcpy(codProxEstacao, "NULO");
-    
-    char distProxEstacao[32];
-    sprintf(distProxEstacao, "%d", reg.distProxEstacao);
-    if(!strcmp(distProxEstacao, "-1"))
-        strcpy(distProxEstacao, "NULO");
-
-    char codLinhaIntegra[32];
-    sprintf(codLinhaIntegra, "%d", reg.codLinhaIntegra);
-    if(!strcmp(codLinhaIntegra, "-1"))
-        strcpy(codLinhaIntegra, "NULO");
-
-    char codEstIntegra[32];
-    sprintf(codEstIntegra, "%d", reg.codEstIntegra);
-    if(!strcmp(codEstIntegra, "-1"))
-        strcpy(codEstIntegra, "NULO");
-
-    printf("%d %s %s %s %s %s %s %s ", codEstacao, nomeEstacao, codLinha, nomeLinha, codProxEstacao,
-    distProxEstacao, codLinhaIntegra, codEstIntegra);
-
-    return;
-}
-
 
 
 //Escreve o cabeçalho no arquivo binário
@@ -877,5 +831,51 @@ void insertRegister(FILE* outFile, Register reg) {
 void setConsistency(char consistency, FILE* outFile) {
     fseek(outFile, 0, SEEK_SET);
     fwrite(&consistency, sizeof(char), 1, outFile);
+    return;
+}
+
+//Imprime os valores de um dado do tipo Register
+void printRegister(Register reg) {
+    if (reg.removido == '1')
+        return;
+
+    int codEstacao = reg.codEstacao;
+
+    char nomeEstacao[MAX_NAME_LENGTH];
+    strcpy(nomeEstacao, reg.nomeEstacao);
+
+    char codLinha[32];
+    sprintf(codLinha, "%d", reg.codLinha);
+    if(!strcmp(codLinha, "-1"))
+        strcpy(codLinha, "NULO");
+
+    char nomeLinha[MAX_NAME_LENGTH];
+    strcpy(nomeLinha, reg.nomeLinha);
+    if(!strlen(nomeLinha))
+        strcpy(nomeLinha, "NULO");
+
+    char codProxEstacao[32];
+    sprintf(codProxEstacao, "%d", reg.codProxEstacao);
+    if(!strcmp(codProxEstacao, "-1"))
+        strcpy(codProxEstacao, "NULO");
+    
+    char distProxEstacao[32];
+    sprintf(distProxEstacao, "%d", reg.distProxEstacao);
+    if(!strcmp(distProxEstacao, "-1"))
+        strcpy(distProxEstacao, "NULO");
+
+    char codLinhaIntegra[32];
+    sprintf(codLinhaIntegra, "%d", reg.codLinhaIntegra);
+    if(!strcmp(codLinhaIntegra, "-1"))
+        strcpy(codLinhaIntegra, "NULO");
+
+    char codEstIntegra[32];
+    sprintf(codEstIntegra, "%d", reg.codEstIntegra);
+    if(!strcmp(codEstIntegra, "-1"))
+        strcpy(codEstIntegra, "NULO");
+
+    printf("%d %s %s %s %s %s %s %s ", codEstacao, nomeEstacao, codLinha, nomeLinha, codProxEstacao,
+    distProxEstacao, codLinhaIntegra, codEstIntegra);
+
     return;
 }
