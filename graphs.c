@@ -10,6 +10,8 @@
 * Utilizadas somente em "graphs.c"
 */
 
+
+//Adiciona o vertice (Nome da estacao no registro) a uma lista ordenada de vertices e retorna a cabeca da lista de vertices
 VerticesListElement* addVertexToGraph(VerticesListElement* verticesListHead, int addedRegIndex, Register* regArray, int arrayAmount){
     VerticesListElement * verticeAux = NULL;
     VerticesListElement * verticeInsert = NULL;
@@ -89,6 +91,7 @@ VerticesListElement* addVertexToGraph(VerticesListElement* verticesListHead, int
     return verticesListHead;
 }
 
+//Adicino a aresta para a linha de integracao a uma lista ordenada de arestas
 void addEdgeIntegraToGraph(VerticesListElement* verticesListHead, int addedRegIndex, Register* regArray, int arrayAmount){
     EdgesListElement *edgeInsert = NULL, *edgeAux = NULL, *edgeAuxAnt = NULL;
     VerticesListElement *verticeAux = NULL;
@@ -183,6 +186,7 @@ void addEdgeIntegraToGraph(VerticesListElement* verticesListHead, int addedRegIn
     }
 }
 
+//Adicino a aresta (Proxima estacao e distancia) com a linha (sem ser a de integracao) a uma lista ordenada de arestas
 void addEdgeToGraph(VerticesListElement* verticesListHead, int addedRegIndex, Register* regArray, int arrayAmount){
     EdgesListElement *edgeInsert = NULL, *edgeAux = NULL, *edgeAuxAnt = NULL;
     VerticesListElement *verticeAux = NULL;
