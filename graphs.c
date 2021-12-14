@@ -10,6 +10,18 @@
 * Utilizadas somente em "graphs.c"
 */
 
+//Encontra o registro com o codEstacao dado e retorna seu index no array regArray
+//Se o registro não for encontrado, retorna -1
+int getRegisterArrayIndexById (Register* regArray, int arraySize, int codEstacao) {
+    for (int i = 0; i < arraySize; i++)
+    {
+        if (regArray[i].codEstacao == codEstacao) {
+            return i;
+        }
+    }
+
+    return -1;
+}
 
 //Adiciona o vertice (Nome da estacao no registro) a uma lista ordenada de vertices e retorna a cabeca da lista de vertices
 VerticesListElement* addVertexToGraph(VerticesListElement* verticesListHead, int addedRegIndex, Register* regArray, int arrayAmount){
@@ -104,9 +116,9 @@ void addEdgeIntegraToGraph(VerticesListElement* verticesListHead, int addedRegIn
         return;
     }
 
-    //Verifica se esxiste linha de integracao
+    //Verifica se existe próxima estação de integração
     if(regArray[addedRegIndex].codEstIntegra!=-1){
-        index = regArray[addedRegIndex].codEstIntegra - 1;
+        index = getRegisterArrayIndexById(regArray, arrayAmount, regArray[addedRegIndex].codEstIntegra);
         strcpy(nomeProxEstacao,regArray[index].nomeEstacao);
         strcpy(nomeLinha,"Integra");
         verticeAux = verticesListHead;
@@ -203,9 +215,9 @@ void addEdgeToGraph(VerticesListElement* verticesListHead, int addedRegIndex, Re
         return;
     }
 
-    //Verifica se esxiste linha comum
+    //Verifica se existe próxima estação
     if(regArray[addedRegIndex].codProxEstacao!=-1){
-        index = regArray[addedRegIndex].codProxEstacao - 1;
+        index = getRegisterArrayIndexById(regArray, arrayAmount, regArray[addedRegIndex].codProxEstacao);
         strcpy(nomeProxEstacao,regArray[index].nomeEstacao);
         strcpy(nomeLinha,regArray[addedRegIndex].nomeLinha);
         verticeAux = verticesListHead;
@@ -424,13 +436,13 @@ void printGraph (FILE* inFile) {
         //Loop responsável pela impressão das arestas
         while (edgeCursor != NULL)
         {
-            printf(", %s, %d", edgeCursor->nomeProxEst, edgeCursor->distanciaProxEst);
+            printf(" %s %d", edgeCursor->nomeProxEst, edgeCursor->distanciaProxEst);
 
             LinhasListElement* linhaCursor = edgeCursor->linhasListHead;
             //Loop responsável pela impressão das linhas
             while (linhaCursor != NULL)
             {
-                printf(", %s", linhaCursor->nomeLinha);
+                printf(" %s", linhaCursor->nomeLinha);
                 linhaCursor = linhaCursor->next;
             }
 
