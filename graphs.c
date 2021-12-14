@@ -177,11 +177,15 @@ void addEdgeIntegraToGraph(VerticesListElement* verticesListHead, int addedRegIn
         strcpy(edgeInsert->nomeProxEst,nomeProxEstacao);
         edgeInsert->distanciaProxEst = 0;
         edgeInsert->next = edgeAux;
-        edgeAuxAnt->next = edgeInsert;
+        if(edgeAuxAnt==NULL){
+            verticeAux->edgesListHead = edgeInsert;
+        }else{
+            edgeAuxAnt->next = edgeInsert;
+        }
         linhaInsert = (LinhasListElement*) malloc (sizeof(LinhasListElement));
         strcpy(linhaInsert->nomeLinha,nomeLinha);
         linhaInsert->next = NULL;
-        edgeAux->linhasListHead = linhaInsert;
+        edgeInsert->linhasListHead = linhaInsert;
         return;
     }
 }
@@ -261,7 +265,7 @@ void addEdgeToGraph(VerticesListElement* verticesListHead, int addedRegIndex, Re
                linhaInsert = (LinhasListElement*) malloc (sizeof(LinhasListElement));
                strcpy(linhaInsert->nomeLinha,nomeLinha);
                linhaInsert->next = NULL;
-               edgeAux->linhasListHead = linhaInsert;
+               edgeInsert->linhasListHead = linhaInsert;
                return;
            }
            edgeAuxAnt = edgeAux;
@@ -272,7 +276,7 @@ void addEdgeToGraph(VerticesListElement* verticesListHead, int addedRegIndex, Re
         strcpy(edgeInsert->nomeProxEst,nomeProxEstacao);
         edgeInsert->distanciaProxEst = regArray[addedRegIndex].distProxEstacao;
         edgeInsert->next = edgeAux;
-        if(edgeAux==NULL){
+        if(edgeAuxAnt==NULL){
             verticeAux->edgesListHead = edgeInsert;
         }else{
             edgeAuxAnt->next = edgeInsert;
@@ -280,7 +284,7 @@ void addEdgeToGraph(VerticesListElement* verticesListHead, int addedRegIndex, Re
         linhaInsert = (LinhasListElement*) malloc (sizeof(LinhasListElement));
         strcpy(linhaInsert->nomeLinha,nomeLinha);
         linhaInsert->next = NULL;
-        edgeAux->linhasListHead = linhaInsert;
+        edgeInsert->linhasListHead = linhaInsert;
         return;
     }
 }
