@@ -120,6 +120,10 @@ void addEdgeIntegraToGraph(VerticesListElement* verticesListHead, int addedRegIn
     if(regArray[addedRegIndex].codEstIntegra!=-1){
         index = getRegisterArrayIndexById(regArray, arrayAmount, regArray[addedRegIndex].codEstIntegra);
         strcpy(nomeProxEstacao,regArray[index].nomeEstacao);
+        //Verifica se o nome da estacao codEstacao e diferente do nome da estacao codEstacaoIntegra
+        if(strcmp(nomeProxEstacao,regArray[addedRegIndex].nomeEstacao)==0){
+            return;
+        }
         strcpy(nomeLinha,"Integra");
         verticeAux = verticesListHead;
         
@@ -166,25 +170,29 @@ void addEdgeIntegraToGraph(VerticesListElement* verticesListHead, int addedRegIn
                    linhaInsert = (LinhasListElement*) malloc (sizeof(LinhasListElement));
                    strcpy(linhaInsert->nomeLinha,nomeLinha);
                    linhaInsert->next = linhaAux;
-                   linhaAuxAnt->next = linhaInsert;
+                   if(linhaAuxAnt==NULL){
+                       edgeAux->linhasListHead=linhaInsert;
+                   }else{
+                       linhaAuxAnt->next = linhaInsert;
+                   }
                    return;
                }
                //Adciona a aresta
                edgeInsert = (EdgesListElement*) malloc (sizeof(EdgesListElement));
                strcpy(edgeInsert->nomeProxEst,nomeProxEstacao);
-               edgeInsert->distanciaProxEst = regArray[addedRegIndex].distProxEstacao;
+               edgeInsert->distanciaProxEst = 0;
                edgeInsert->next = edgeAux;
                edgeAuxAnt->next = edgeInsert;
                linhaInsert = (LinhasListElement*) malloc (sizeof(LinhasListElement));
                strcpy(linhaInsert->nomeLinha,nomeLinha);
                linhaInsert->next = NULL;
-               edgeAux->linhasListHead = linhaInsert;
+               edgeInsert->linhasListHead = linhaInsert;
                return;
            }
            edgeAuxAnt = edgeAux;
            edgeAux = edgeAux->next;
         }
-        //Adiciona a aresta no final
+        //Adiciona a aresta no final ou quando nao tem aresta
         edgeInsert = (EdgesListElement*) malloc (sizeof(EdgesListElement));
         strcpy(edgeInsert->nomeProxEst,nomeProxEstacao);
         edgeInsert->distanciaProxEst = 0;
@@ -265,7 +273,12 @@ void addEdgeToGraph(VerticesListElement* verticesListHead, int addedRegIndex, Re
                    linhaInsert = (LinhasListElement*) malloc (sizeof(LinhasListElement));
                    strcpy(linhaInsert->nomeLinha,nomeLinha);
                    linhaInsert->next = linhaAux;
-                   linhaAuxAnt->next = linhaInsert;
+                   if (linhaAuxAnt==NULL)
+                   {
+                       edgeAux->linhasListHead = linhaInsert;
+                   }else{
+                       linhaAuxAnt->next = linhaInsert;
+                   }
                    return;
                }
                //Adciona a aresta
@@ -283,7 +296,7 @@ void addEdgeToGraph(VerticesListElement* verticesListHead, int addedRegIndex, Re
            edgeAuxAnt = edgeAux;
            edgeAux = edgeAux->next;
         }
-        //Adiciona a aresta no final
+        //Adiciona a aresta no final ou quando nao tem aresta
         edgeInsert = (EdgesListElement*) malloc (sizeof(EdgesListElement));
         strcpy(edgeInsert->nomeProxEst,nomeProxEstacao);
         edgeInsert->distanciaProxEst = regArray[addedRegIndex].distProxEstacao;
@@ -310,10 +323,6 @@ void addLinhaToGraph(){
 //Adiciona um registro ao grafo
 VerticesListElement* addRegToGraph (VerticesListElement* verticesListHead, int addedRegIndex,
                                     Register* regArray, int arrayAmount) {
-    
-    if(addedRegIndex>arrayAmount){
-        return NULL;
-    }
 
     verticesListHead = addVertexToGraph(verticesListHead, addedRegIndex, regArray, arrayAmount);
 
