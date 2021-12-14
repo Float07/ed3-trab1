@@ -432,13 +432,13 @@ void printGraph (FILE* inFile) {
         //Loop responsável pela impressão das arestas
         while (edgeCursor != NULL)
         {
-            printf(", %s, %d", edgeCursor->nomeProxEst, edgeCursor->distanciaProxEst);
+            printf(" %s %d", edgeCursor->nomeProxEst, edgeCursor->distanciaProxEst);
 
             LinhasListElement* linhaCursor = edgeCursor->linhasListHead;
             //Loop responsável pela impressão das linhas
             while (linhaCursor != NULL)
             {
-                printf(", %s", linhaCursor->nomeLinha);
+                printf(" %s", linhaCursor->nomeLinha);
                 linhaCursor = linhaCursor->next;
             }
 
