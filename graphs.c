@@ -272,8 +272,8 @@ void addEdgeToGraph(VerticesListElement* verticesListHead, int addedRegIndex, Re
         strcpy(edgeInsert->nomeProxEst,nomeProxEstacao);
         edgeInsert->distanciaProxEst = regArray[addedRegIndex].distProxEstacao;
         edgeInsert->next = edgeAux;
-        if(edgeAuxAnt->next==NULL){
-
+        if(edgeAux==NULL){
+            verticeAux->edgesListHead = edgeInsert;
         }else{
             edgeAuxAnt->next = edgeInsert;
         }
