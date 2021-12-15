@@ -99,7 +99,7 @@ void addEdgeIntegraToGraph(VerticesListElement *verticesListHead, int addedRegIn
         {
             return;
         }
-        strcpy(nomeLinha, "Integração");
+        strcpy(nomeLinha, "Integracao");
         verticeAux = verticesListHead;
 
         // Encontra o vertice na lista de vertices para adicionar a aresta
