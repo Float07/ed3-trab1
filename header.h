@@ -105,7 +105,6 @@ typedef struct Path Path;
 struct Path
 {
     char nomeEstacao[MAX_NAME_LENGTH];
-    int distance;
     Path* next;
 };
 

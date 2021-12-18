@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 #include "header.h"
 
 /*
@@ -8,8 +9,55 @@
  * Utilizadas somente em "graphs.c"
  */
 
-// Encontra o registro com o codEstacao dado e retorna seu index no array regArray
+// Retorna a quantidade de vértices em uma lista encadeada de vértices
+// Parâmetros:
+// graph -> ponteiro do primeiro elemento da lista encadeada de vértices
+int getGraphSize(VerticesListElement* graph) {
+    int graphSize = 0;
+    
+    while (graph != NULL)
+    {
+        graphSize++;
+        graph = graph->next;
+    }
+    
+    return graphSize;
+}
+
+// Retorna o vértice presente na lista encadeada de vértices na posição indicada por index
+// Se o tamanho do grafo for menor ou igual a index, retorna NULL
+// Parâmetros:
+// graph -> Ponteiro para o primeiro vértice da lista encadeada de vértices
+// index -> Posição do vértice, na lista encadeada de vértices, que será retornado (começa em 0)
+VerticesListElement *getVertexByIndex(VerticesListElement *graph, int index) {
+    int i = 0;
+    while (1)
+    {
+        if (!graph || index == i) return graph;
+        graph = graph->next;
+        i++;
+    }
+}
+
+// Consegue a posição do vértice na lista encadeada de vértices que possui o nomeEstacao dado
+int getVertexIndexByName(VerticesListElement *graph, char *nomeEstacao) {
+    int index = 0;
+    while (graph != NULL && strcmp(graph->nomeEstacao, nomeEstacao))
+    {
+        graph = graph->next;
+        index++;
+    }
+    
+    return index;
+}
+
+// Recebe um array de registros e retorna o index do registro que possui codEstacao igual ao valor
+// de codEstacao recebido como parâmetro
 // Se o registro não for encontrado, retorna -1
+// Parâmetros:
+// regArray -> Array de registros a ser analisado
+// arraySize -> Quantidade de registros salvos em regArray
+// codEstacao -> codEstacao do registro que se quer encontrar
 int getRegisterArrayIndexById(Register *regArray, int arraySize, int codEstacao)
 {
     for (int i = 0; i < arraySize; i++)
@@ -23,7 +71,7 @@ int getRegisterArrayIndexById(Register *regArray, int arraySize, int codEstacao)
     return -1;
 }
 
-// Adiciona o vertice (Nome da estacao no registro) a uma lista ordenada de vertices e retorna a cabeca da lista de vertices
+// Adiciona o vertice a uma lista ordenada de vertices e retorna o topo da lista de vertices
 VerticesListElement *addVertexToGraph(VerticesListElement *verticesListHead, int addedRegIndex, Register *regArray, int arrayAmount)
 {
     VerticesListElement *verticeAux = NULL, *verticeAuxAnt = NULL;
@@ -74,7 +122,7 @@ VerticesListElement *addVertexToGraph(VerticesListElement *verticesListHead, int
 
 }
 
-// Adicino a aresta para a linha de integracao a uma lista ordenada de arestas
+// Adicina a aresta e linha para a estação de integracao a uma lista ordenada de arestas
 void addEdgeIntegraToGraph(VerticesListElement *verticesListHead, int addedRegIndex, Register *regArray, int arrayAmount)
 {
     EdgesListElement *edgeInsert = NULL, *edgeAux = NULL, *edgeAuxAnt = NULL;
@@ -204,7 +252,7 @@ void addEdgeIntegraToGraph(VerticesListElement *verticesListHead, int addedRegIn
     }
 }
 
-// Adicino a aresta (Proxima estacao e distancia) com a linha (sem ser a de integracao) a uma lista ordenada de arestas
+// Adicina a aresta com a linha (sem ser a de integracao) a uma lista ordenada de arestas
 void addEdgeToGraph(VerticesListElement *verticesListHead, int addedRegIndex, Register *regArray, int arrayAmount)
 {
     EdgesListElement *edgeInsert = NULL, *edgeAux = NULL, *edgeAuxAnt = NULL;
@@ -414,22 +462,19 @@ void freePath(Path *path)
 }
 
 // Imprime um caminho definido pela variável path
-void printPath(Path *path)
+void printPath(Path *path, int distance)
 {
     int verticesAmount = 0;
-    int totalDistance = 0;
     Path *pathCursor = path;
 
     // Calcula e imprime a distância e número de vértices percorridos
     while (pathCursor != NULL)
     {
         verticesAmount++;
-        totalDistance += pathCursor->distance;
-
         pathCursor = pathCursor->next;
     }
-    printf("Numero de estacoes que serao percorridas: %d\n", verticesAmount);
-    printf("Distancia que sera percorrida: %d\n", totalDistance);
+    printf("Numero de estacoes que serao percorridas: %d\n", verticesAmount - 1); // Desconsidera estação destino
+    printf("Distancia que sera percorrida: %d\n", distance);
 
     // Imprime o caminho percorrido
     pathCursor = path;
@@ -445,16 +490,100 @@ void printPath(Path *path)
     return;
 }
 
+// Retorna o index do caminho mais curto atual que não foi visitado
+int getUnvisitedMinValueIndex(int *shortestDistances, int arraySize, char *visitedVertices) {
+    int minValue = INT_MAX;
+    int minValueIndex = 0;
+    for (int i = 0; i < arraySize; i++)
+    {
+        if ((shortestDistances[i] < minValue) && (!visitedVertices[i])) {
+            minValue = shortestDistances[i];
+            minValueIndex = i;
+        }
+    }
+    return minValueIndex;
+}
+
 // Encontra e retorna o caminho mais rápido entre a estação origem e a estação destino
 // Parâmetros:
 // graph -> Ponteiro para a primeira estação no vetor de estações na lista de adjacências
 // startingEstacao -> Nome da estação da qual iremos partir
 // destEstacao -> Nome da estação na qual queremos chegar
-Path *findPathDijkstra(VerticesListElement *graph, char *startingEstacao, char *destEstacao)
+// distance -> Aponta para o endereço que receberá a distância total do caminho obtido
+Path *findPathDijkstra(VerticesListElement *graph, char *startingEstacao, char *destEstacao, int* distance)
 {
+    int graphSize = getGraphSize(graph);
+    int startingEstacaoIndex = getVertexIndexByName(graph, startingEstacao);
+    int destEstacaoIndex = getVertexIndexByName(graph, destEstacao);
 
-    // NEEDS IMPLEMENTATION
-    return NULL;
+    // Nos vetores abaixo, o valor na posição X mostra informações sobre o vértice na posição X
+    // da lista encadeada de estações
+    // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+    // 0 - vértice ainda não foi visitado (não marcado) / 1 - O vértice foi visitado (marcado)
+    char *visitedVertices = (char*)calloc(graphSize, sizeof(char));
+    // Distâncias mais curtas encontradas a partir do vértice de origem
+    int *shortestDistances = (int*)malloc(graphSize * sizeof(int));
+    // Vetor de antecessores, usado para reconstruir o caminho de distância mais curta -> -1 indica que não há antecessor
+    int *antecessors = (int*)malloc(graphSize * sizeof(int));
+    //Inicializa os valores dos vetores
+    for (int i = 0; i < graphSize; i++)
+    {
+        antecessors[i] = -1;
+        shortestDistances[i] = INT_MAX; // Máximo valor que um int pode assumir
+        if (i == startingEstacaoIndex) shortestDistances[i] = 0; //Custo 0 para a origem
+    }
+    
+    // Faz o loop enquanto a estação de destino não é visitada
+    while (!(visitedVertices[destEstacaoIndex]))
+    {
+        // Seleciona o próximo vértice a ser analisado e o marca como visitado
+        int currentVertexIndex = getUnvisitedMinValueIndex(shortestDistances, graphSize, visitedVertices);
+        visitedVertices[currentVertexIndex] = 1;
+
+        // Se chegou à estação destino, saia do loop
+        if (currentVertexIndex == destEstacaoIndex) break;
+        // Se a menor distância obtida foi a máxima, não há caminho para o destino, saia do loop
+        if (shortestDistances[currentVertexIndex] == INT_MAX) break;
+
+        // Atualiza a distâncias dos vértices adjacentes ao vértice sendo analisado
+        VerticesListElement *currentVertex = getVertexByIndex(graph, currentVertexIndex);
+        EdgesListElement *edge = currentVertex->edgesListHead;
+        while(edge)
+        {
+            int connectedVertexIndex = getVertexIndexByName(graph, edge->nomeProxEst);
+            int previousDistance = shortestDistances[connectedVertexIndex];
+            int newDistance = edge->distanciaProxEst + shortestDistances[currentVertexIndex];
+            // Se a nova distância for menor, atualiza
+            if (newDistance < previousDistance) 
+            {
+                shortestDistances[connectedVertexIndex] = newDistance;
+                antecessors[connectedVertexIndex] = currentVertexIndex;
+            }
+
+            edge = edge->next;
+        }
+    }
+    
+    // Constrói o caminho a partir do vetor de antecessores
+    Path *shortestPath = (Path*)malloc(sizeof(Path));
+    shortestPath->next = NULL;
+    strcpy(shortestPath->nomeEstacao, destEstacao);
+    int antecessor = antecessors[destEstacaoIndex];
+    while(antecessor != -1) {
+        Path *nextNode = shortestPath;
+        Path *newNode = (Path*)malloc(sizeof(Path));
+        newNode->next = nextNode;
+        VerticesListElement *newNodeVertex = getVertexByIndex(graph, antecessor);
+        strcpy(newNode->nomeEstacao, newNodeVertex->nomeEstacao);
+        shortestPath = newNode;
+        antecessor = antecessors[antecessor];
+    }
+
+
+    // Define a distância e retorna o caminho
+    *distance = shortestDistances[destEstacaoIndex];
+    free(visitedVertices); free(shortestDistances); free(antecessors);
+    return shortestPath;
 }
 
 /*
@@ -505,9 +634,11 @@ void printGraph(FILE *inFile)
 void printDijkstra(FILE *inFile, char *startingEstacao, char *destEstacao)
 {
     VerticesListElement *graph = generateGraph(inFile);
-    Path *fastestPath = findPathDijkstra(graph, startingEstacao, destEstacao);
+    int distance;
+    Path *fastestPath = findPathDijkstra(graph, startingEstacao, destEstacao, &distance);
 
-    printPath(fastestPath);
+    if (strcmp(fastestPath->nomeEstacao, destEstacao)) printPath(fastestPath, distance);
+    else printf("Não existe caminho entre as estações solicitadas.");
 
     freePath(fastestPath);
 }
