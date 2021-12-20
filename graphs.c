@@ -443,12 +443,6 @@ VerticesListElement *generateGraph(FILE *inFile)
     return graph;
 }
 
-// Limpa a memória utilizada por um caminho path
-void freePath(Path *path)
-{
-    // NEEDS TO BE IMPLEMENTED
-}
-
 // Imprime um caminho definido pela variável path
 void printPath(Path *path, int distance)
 {
@@ -713,8 +707,6 @@ void printDijkstra(FILE *inFile, char *startingEstacao, char *destEstacao)
 
     if (strcmp(fastestPath->nomeEstacao, destEstacao)) printPath(fastestPath, distance);
     else printf("Não existe caminho entre as estações solicitadas.");
-
-    freePath(fastestPath);
 }
 
 void printCiclo(FILE *inFile, char *startingEstacao)
