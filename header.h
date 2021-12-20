@@ -95,6 +95,7 @@ struct EdgesListElement
 typedef struct VerticesListElement VerticesListElement;
 struct VerticesListElement {
     char nomeEstacao[MAX_NAME_LENGTH];
+    int cor;                            //0 representa branco, 1 cinza e 2 preto
     EdgesListElement* edgesListHead;
     VerticesListElement* next;
 };
@@ -108,9 +109,19 @@ struct Path
     Path* next;
 };
 
+//Lista de antecessores para a busca em profundidade
+
+typedef struct Ant Ant;
+struct Ant
+{
+    char nome[MAX_NAME_LENGTH];
+    Ant* next;
+};
+
 
 void printGraph(FILE* inFile);
 void printDijkstra (FILE* inFile, char* startingEstacao, char* destEstacao);
+void printCiclo(FILE* inFile, char* startingEstacao);
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 //funcoesFornecidas.c

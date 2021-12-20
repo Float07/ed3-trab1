@@ -321,7 +321,7 @@ void funcionalidade7() {
     FILE* inFile = fopen(inputFileName, "rb");
 
     if(inFile == NULL){
-        printf("Falha no processamento do arquivo.\n");
+        printf("Falha na execução da funcionalidade.\n");
         return;
     }
 
@@ -353,6 +353,29 @@ void funcionalidade8() {
     printDijkstra(inFile, startingEstacao, destEstacao);
 
     fclose(inFile);
+}
+
+void funcionalidade9() {
+    char inputFileName[MAX_FILENAME_SIZE];
+    char startingEstacao[MAX_NAME_LENGTH];
+
+    scanf("%s", inputFileName);
+    scanf("%*s");//Pula "nomeEstacaoOrigem"
+    scan_quote_string(startingEstacao);
+
+    FILE* inFile = fopen(inputFileName, "rb");
+    if(inFile == NULL){
+        printf("Falha na execução da funcionalidade.\n");
+        return;
+    }
+
+    printCiclo(inFile, startingEstacao);
+    
+    fclose(inFile);
+
+    return;
+
+
 }
 
 
@@ -397,6 +420,10 @@ int main(int argc, char *argv[]) {
     
     case 8:
         funcionalidade8();
+        break;
+
+    case 9:
+        funcionalidade9();
         break;
 
     default:

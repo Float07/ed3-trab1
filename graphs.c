@@ -81,6 +81,7 @@ VerticesListElement *addVertexToGraph(VerticesListElement *verticesListHead, int
     {
         verticesListHead = (VerticesListElement *)malloc(sizeof(VerticesListElement));
         strcpy(verticesListHead->nomeEstacao, regArray[addedRegIndex].nomeEstacao);
+        verticesListHead->cor = 0;
         verticesListHead->next = NULL;
         verticesListHead->edgesListHead = NULL;
         return verticesListHead;
@@ -97,6 +98,7 @@ VerticesListElement *addVertexToGraph(VerticesListElement *verticesListHead, int
                 if(verticeAux==verticesListHead){
                     verticeInsert = (VerticesListElement *)malloc(sizeof(VerticesListElement));
                     strcpy(verticeInsert->nomeEstacao, regArray[addedRegIndex].nomeEstacao);
+                    verticeInsert->cor = 0;
                     verticeInsert->edgesListHead =NULL;
                     verticeInsert->next = verticesListHead;
                     verticesListHead = verticeInsert;
@@ -104,6 +106,7 @@ VerticesListElement *addVertexToGraph(VerticesListElement *verticesListHead, int
                 }
                 verticeInsert = (VerticesListElement *)malloc(sizeof(VerticesListElement));
                 strcpy(verticeInsert->nomeEstacao, regArray[addedRegIndex].nomeEstacao);
+                verticeInsert->cor = 0;
                 verticeInsert->edgesListHead =NULL;
                 verticeInsert->next = verticeAux;
                 verticeAuxAnt->next = verticeInsert;
@@ -114,6 +117,7 @@ VerticesListElement *addVertexToGraph(VerticesListElement *verticesListHead, int
         }
         verticeInsert = (VerticesListElement *)malloc(sizeof(VerticesListElement));
         strcpy(verticeInsert->nomeEstacao, regArray[addedRegIndex].nomeEstacao);
+        verticeInsert->cor = 0;
         verticeInsert->edgesListHead = NULL;
         verticeInsert->next = NULL;
         verticeAuxAnt->next = verticeInsert;
@@ -383,22 +387,6 @@ void addEdgeToGraph(VerticesListElement *verticesListHead, int addedRegIndex, Re
     }
 }
 
-
-// Adiciona um registro ao grafo
-/*
-VerticesListElement *addRegToGraph(VerticesListElement *verticesListHead, int addedRegIndex,
-                                   Register *regArray, int arrayAmount)
-{
-
-    verticesListHead = addVertexToGraph(verticesListHead, addedRegIndex, regArray, arrayAmount);
-
-    addEdgeToGraph(verticesListHead, addedRegIndex, regArray, arrayAmount);
-    addEdgeIntegraToGraph(verticesListHead, addedRegIndex, regArray, arrayAmount);
-
-    return verticesListHead;
-}
-*/
-
 // Lê um arquivo binário e retorna um vetor com todos os registros contidos nele
 Register *allRegistersToArray(FILE *inFile, int *arraySize)
 {
@@ -586,6 +574,92 @@ Path *findPathDijkstra(VerticesListElement *graph, char *startingEstacao, char *
     return shortestPath;
 }
 
+int achaCor(char *vertice, VerticesListElement *verticesListHead){
+    VerticesListElement *verticeListAux = NULL;
+
+    verticeListAux = verticesListHead;
+
+    while (verticeListAux!=NULL)
+    {
+        if(strcmp(vertice,verticeListAux->nomeEstacao)==0){
+            return verticeListAux->cor;
+        }
+        verticeListAux = verticeListAux->next;
+    }
+    return -1;
+}
+
+int mudaCor(int cor, char *vertice, VerticesListElement *verticesListHead){
+    VerticesListElement *verticeListAux = NULL;
+
+    verticeListAux = verticesListHead;
+
+    while (verticeListAux!=NULL)
+    {
+        if(strcmp(vertice,verticeListAux->nomeEstacao)==0){
+            verticeListAux->cor = cor;
+            return cor;
+        }
+        verticeListAux = verticeListAux->next;
+    }
+    return -1;
+}
+
+VerticesListElement* achaVertice(char *nome, VerticesListElement *verticesListHead){
+    VerticesListElement *verticeAux = NULL;
+
+    verticeAux = verticesListHead;
+    while(verticeAux!=NULL){
+        if(strcmp(nome,verticeAux->nomeEstacao)==0){
+            return verticeAux;
+        }
+        verticeAux = verticeAux->next;
+    }
+    return verticeAux;
+}
+
+//Faz a busca em profundidade e para ao encontrar o primeiro ciclo com o vertice inicial ou acabar a busca
+Ant* buscaDF(VerticesListElement *verticesListHead, Ant *antList){
+    VerticesListElement *verticeAux = NULL, *verticeAuxProx = NULL;
+    EdgesListElement *arestaAux = NULL;
+    Ant *antInsert = NULL;
+    char verticeAtual[MAX_NAME_LENGTH], verticeProx[MAX_NAME_LENGTH];
+
+    strcpy(verticeAtual, antList->nome);
+    mudaCor(1, verticeAtual, verticesListHead);
+
+    verticeAux = achaVertice(verticeAtual, verticesListHead);
+    arestaAux = verticeAux->edgesListHead;
+    while (achaCor(antList->nome, verticesListHead)!=2)
+    {
+        strcpy(verticeProx,arestaAux->nomeProxEst);
+        verticeAuxProx = achaVertice(verticeProx, verticesListHead);
+
+        if(verticeAuxProx->cor==0){
+            strcpy(verticeAtual,verticeProx);
+            verticeAuxProx->cor = 1;
+            antInsert = (Ant*) malloc(sizeof(Ant));
+            strcpy(antInsert->nome,verticeProx);
+            antInsert->next = NULL;
+        }
+        if(verticeAuxProx->cor==1){
+            if(strcmp(antList->nome,verticeProx)==0){
+                antInsert = (Ant*) malloc(sizeof(Ant));
+                strcpy(antInsert->nome,verticeProx);
+                antInsert->next = NULL;
+                return antList;
+            }
+            arestaAux = arestaAux->next;
+        }
+        if(verticeAuxProx->cor==2){
+
+        }
+        
+    }
+    return antList;
+    
+}
+
 /*
  * FUNÇÕES EXTERNAS
  * Utilizadas fora de "graphs.c"
@@ -641,4 +715,18 @@ void printDijkstra(FILE *inFile, char *startingEstacao, char *destEstacao)
     else printf("Não existe caminho entre as estações solicitadas.");
 
     freePath(fastestPath);
+}
+
+void printCiclo(FILE *inFile, char *startingEstacao)
+{
+    VerticesListElement *graph = generateGraph(inFile);
+   // int distance, nEstacoes;
+    Ant *antList=NULL;
+
+    antList = (Ant*) malloc(sizeof(Ant));
+    antList->next = NULL;
+    strcpy(antList->nome, startingEstacao);
+
+    antList = buscaDF(graph, antList);
+
 }
