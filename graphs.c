@@ -426,11 +426,6 @@ VerticesListElement *generateGraph(FILE *inFile)
     int arraySize = 0;
     Register *regArray = allRegistersToArray(inFile, &arraySize);
 
-    /* Adiciona os registros do vetor de registro no grafo
-    for (int i = 0; i < arraySize; i++)
-    {
-        graph = addRegToGraph(graph, i, regArray, arraySize);
-    }*/
     for (int i = 0; i < arraySize; i++){
         graph = addVertexToGraph(graph, i, regArray, arraySize);
     }
