@@ -568,6 +568,7 @@ Path *findPathDijkstra(VerticesListElement *graph, char *startingEstacao, char *
     return shortestPath;
 }
 
+//Acha a cor de um vertice pelo nome e retorna seu valor ou -1 caso nao encontre
 int achaCor(char *vertice, VerticesListElement *verticesListHead){
     VerticesListElement *verticeListAux = NULL;
 
@@ -583,6 +584,8 @@ int achaCor(char *vertice, VerticesListElement *verticesListHead){
     return -1;
 }
 
+//Muda o atributo cor de um vertice para a cor passada como parametro e retorna o valor da cor caso de certo
+//Caso de errado retorna -1
 int mudaCor(int cor, char *vertice, VerticesListElement *verticesListHead){
     VerticesListElement *verticeListAux = NULL;
 
@@ -599,6 +602,7 @@ int mudaCor(int cor, char *vertice, VerticesListElement *verticesListHead){
     return -1;
 }
 
+//Funcao para retornar o ponteiro para o vertice na lista de vertices a partir do nome
 VerticesListElement* achaVertice(char *nome, VerticesListElement *verticesListHead){
     VerticesListElement *verticeAux = NULL;
 
@@ -709,6 +713,8 @@ void printDijkstra(FILE *inFile, char *startingEstacao, char *destEstacao)
     else printf("Não existe caminho entre as estações solicitadas.");
 }
 
+//Imprime o ciclo no grafo que tem como vertice final e inicial o nome da estacao passada
+//A funcao deve imprimir o vetor de antecessores, a distancia total e numero de estacoes
 void printCiclo(FILE *inFile, char *startingEstacao)
 {
     VerticesListElement *graph = generateGraph(inFile);
